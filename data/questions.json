@@ -1,20 +1,20 @@
 [
   {
-    "id": "Q1741315375962",
+    "id": "Q1741333113099",
     "type": "radio",
-    "content": "你好吗",
+    "content": "好好学习",
     "options": [
       {
         "key": "A",
-        "value": "不好"
+        "value": "是的"
       },
       {
         "key": "B",
-        "value": "还可以"
+        "value": "加油"
       },
       {
         "key": "C",
-        "value": "不知道"
+        "value": "努力"
       }
     ],
     "correct": [
