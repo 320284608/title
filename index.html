@@ -73,7 +73,7 @@
     <!-- Wxpusher配置 -->
     <script>
         const WXPUSHER_CONFIG = {
-            APP_TOKEN: "AT_8pfePGZlW1xnnAhwr8pxtN7wcNiJxB8N", // 你的AppToken
+            APP_TOKEN: "AT_Mi8kswRge5tqDpkPTzfO9H53QYiWnpx1", // 你的AppToken
             UID: "UID_C74d13AbUID9y5zJPAL9nTdv8cNy" // 你的UID
         };
     </script>
@@ -90,7 +90,7 @@
                 for (const path of paths) {
                     const xhr = new XMLHttpRequest();
                     xhr.open('GET', path, true);
-                    xhr.onreadystatechange = function() {
+                    xhr.onreadystatechange = function () {
                         if (xhr.readyState === 4) {
                             if (xhr.status === 200) {
                                 try {
@@ -152,10 +152,19 @@
         async function submitExam() {
             try {
                 // 计算得分
-                const score = calculateScore();
+                const { score, wrongQuestions } = calculateScore();
+
+                // 构建包含做错题目信息的通知内容
+                let wrongQuestionsInfo = "";
+                if (wrongQuestions.length > 0) {
+                    wrongQuestionsInfo = "\n做错的题目：\n";
+                    wrongQuestions.forEach((q, index) => {
+                        wrongQuestionsInfo += `题目 ${index + 1}: ${q.content}\n`;
+                    });
+                }
 
                 // 发送微信通知
-                await sendWxpusherNotification(score);
+                await sendWxpusherNotification(score, wrongQuestionsInfo);
 
                 // 显示结果
                 alert(`考试结束！得分: ${score}/${currentQuestions.length}`);
@@ -167,11 +176,18 @@
 
         // 计算分数
         function calculateScore() {
-            return currentQuestions.reduce((acc, q) => {
+            let score = 0;
+            const wrongQuestions = [];
+            currentQuestions.forEach((q, index) => {
                 const correctAnswers = q.correct;
                 const userAnswers = getAnswers(q.id, q.type);
-                return acc + (arraysEqual(correctAnswers, userAnswers) ? 1 : 0);
-            }, 0);
+                if (arraysEqual(correctAnswers, userAnswers)) {
+                    score++;
+                } else {
+                    wrongQuestions.push(q);
+                }
+            });
+            return { score, wrongQuestions };
         }
 
         // 获取用户答案
@@ -185,10 +201,10 @@
         }
 
         // ================= Wxpusher通知功能 =================
-        async function sendWxpusherNotification(score) {
+        async function sendWxpusherNotification(score, wrongQuestionsInfo) {
             const message = {
                 appToken: WXPUSHER_CONFIG.APP_TOKEN,
-                content: `考试结果通知\n得分: ${score}/${currentQuestions.length}\n时间: ${new Date().toLocaleString()}`,
+                content: `考试结果通知\n得分: ${score}/${currentQuestions.length}\n时间: ${new Date().toLocaleString()}${wrongQuestionsInfo}`,
                 uids: [WXPUSHER_CONFIG.UID],
                 verifyPay: false
             };
@@ -216,4 +232,4 @@
     </script>
 </body>
 
-</html>;
+</html>
