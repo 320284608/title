@@ -1,53 +1,24 @@
 [
-    {
-        "id": 0,
-        "type": "text",
-        "content": "请填写中国的首都是____。",
-        "correct": ["北京"],
-        "options": []
-    },
-    {
-        "id": 1,
-        "type": "radio",
-        "content": "以下哪个是水果？",
-        "correct": ["A"],
-        "options": [
-            {
-                "key": "A",
-                "value": "苹果"
-            },
-            {
-                "key": "B",
-                "value": "白菜"
-            },
-            {
-                "key": "C",
-                "value": "土豆"
-            }
-        ]
-    },
-    {
-        "id": 2,
-        "type": "checkbox",
-        "content": "以下哪些是哺乳动物？（多选）",
-        "correct": ["A", "C"],
-        "options": [
-            {
-                "key": "A",
-                "value": "猫"
-            },
-            {
-                "key": "B",
-                "value": "蛇"
-            },
-            {
-                "key": "C",
-                "value": "狗"
-            },
-            {
-                "key": "D",
-                "value": "金鱼"
-            }
-        ]
-    }
+  {
+    "id": "Q1741315375962",
+    "type": "radio",
+    "content": "你好吗",
+    "options": [
+      {
+        "key": "A",
+        "value": "不好"
+      },
+      {
+        "key": "B",
+        "value": "还可以"
+      },
+      {
+        "key": "C",
+        "value": "不知道"
+      }
+    ],
+    "correct": [
+      "B"
+    ]
+  }
 ]
