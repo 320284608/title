@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能考试系统</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui;
+            margin: 20px;
+            background: #f8f9fa;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-card {
+            padding: 20px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+
+        button {
+            background: var(--secondary);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 考试界面 -->
+        <h1>在线考试系统</h1>
+        <div class="timer" id="timer">剩余时间: 30:00</div>
+        <div id="questionContainer"></div>
+        <button onclick="submitExam()">提交试卷</button>
+    </div>
+
+    <!-- Wxpusher配置 -->
+    <script>
+        const WXPUSHER_CONFIG = {
+            APP_TOKEN: "AT_Mi8kswRge5tqDpkPTzfO9H53QYiWnpx1", // 你的AppToken
+            UID: "UID_C74d13AbUID9y5zJPAL9nTdv8cNy" // 你的UID
+        };
+    </script>
+
+    <script>
+        // ================= 考试系统核心逻辑 =================
+        let currentQuestions = [];
+        let timeLeft = 1800; // 30分钟
+
+        // 初始化考试
+        async function initExam() {
+            return new Promise((resolve, reject) => {
+                const paths = ['./data/questions.json', './questions.json'];
+                for (const path of paths) {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('GET', path, true);
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4) {
+                            if (xhr.status === 200) {
+                                try {
+                                    currentQuestions = JSON.parse(xhr.responseText);
+                                    renderQuestions();
+                                    startTimer();
+                                    resolve();
+                                } catch (error) {
+                                    console.log(`解析 JSON 失败: ${error.message}`);
+                                }
+                            } else {
+                                console.log(`尝试路径 ${path} 失败，状态码: ${xhr.status}`);
+                            }
+                        }
+                    };
+                    xhr.send();
+                }
+                reject(new Error('未找到题库文件'));
+            });
+        }
+
+
+        // 渲染题目
+        function renderQuestions() {
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = currentQuestions.map((q, index) => `
+                <div class="question-card">
+                    <h3>题目 ${index + 1} (${q.type === 'text' ? '填空' : q.type === 'radio' ? '单选' : '多选'})</h3>
+                    <p>${q.content}</p>
+                    ${q.options ? q.options.map(opt => `
+                        <label style="display:block; margin:8px 0;">
+                            <input type="${q.type}" name="q${index}" value="${opt.key}">
+                            ${opt.key}. ${opt.value}
+                        </label>
+                    `).join('') : ''}
+                    ${q.type === 'text' ? `
+                        <input type="text" style="width:100%; padding:8px;" 
+                               placeholder="请输入答案" data-question-id="${q.id}">
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // 计时器
+        function startTimer() {
+            setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const seconds = (timeLeft % 60).toString().padStart(2, '0');
+                document.getElementById('timer').textContent = `剩余时间: ${minutes}:${seconds}`;
+
+                if (timeLeft <= 0) {
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        // 提交考试
+        async function submitExam() {
+            try {
+                // 计算得分
+                const score = calculateScore();
+
+                // 发送微信通知
+                await sendWxpusherNotification(score);
+
+                // 显示结果
+                alert(`考试结束！得分: ${score}/${currentQuestions.length}`);
+                location.reload();
+            } catch (error) {
+                alert(`提交失败: ${error.message}`);
+            }
+        }
+
+        // 计算分数
+        function calculateScore() {
+            return currentQuestions.reduce((acc, q) => {
+                const correctAnswers = q.correct;
+                const userAnswers = getAnswers(q.id, q.type);
+                return acc + (arraysEqual(correctAnswers, userAnswers) ? 1 : 0);
+            }, 0);
+        }
+
+        // 获取用户答案
+        function getAnswers(id, type) {
+            if (type === 'text') {
+                const input = document.querySelector(`input[data-question-id="${id}"]`);
+                return [input.value.trim().toUpperCase()];
+            }
+            return Array.from(document.querySelectorAll(`input[name="q${id}"]:checked`))
+                .map(el => el.value);
+        }
+
+        // ================= Wxpusher通知功能 =================
+        async function sendWxpusherNotification(score) {
+            const message = {
+                appToken: WXPUSHER_CONFIG.APP_TOKEN,
+                content: `考试结果通知\n得分: ${score}/${currentQuestions.length}\n时间: ${new Date().toLocaleString()}`,
+                uids: [WXPUSHER_CONFIG.UID],
+                verifyPay: false
+            };
+
+            const response = await fetch('https://wxpusher.zjiecode.com/api/send/message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(message)
+            });
+
+            if (!response.ok) {
+                throw new Error('通知发送失败');
+            }
+        }
+
+        // ================= 工具函数 =================
+        function arraysEqual(a, b) {
+            return a.length === b.length && a.every((val, i) => val === b[i]);
+        }
+
+        // 启动考试
+        window.onload = initExam;
+    </script>
+</body>
+
+</html>;
