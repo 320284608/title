@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能考试系统</title>
+    <title>佳曦烤地瓜🍠考试系统</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -64,7 +64,9 @@
 <body>
     <div class="container">
         <!-- 考试界面 -->
-        <h1>在线考试系统</h1>
+        <h1>佳曦烤地瓜🍠在线考试系统</h1>
+        <label for="studentName">考生姓名:</label>
+        <input type="text" id="studentName" placeholder="请输入考生姓名" required>
         <div class="timer" id="timer">剩余时间: 30:00</div>
         <div id="questionContainer"></div>
         <button onclick="submitExam()">提交试卷</button>
@@ -151,42 +153,41 @@
         // 提交考试
         async function submitExam() {
             try {
-                // 计算得分
+                const studentName = document.getElementById('studentName').value;
+                // 计算得分和答错的题目信息
                 const { score, wrongQuestions } = calculateScore();
 
-                // 构建包含做错题目信息的通知内容
-                let wrongQuestionsInfo = "";
-                if (wrongQuestions.length > 0) {
-                    wrongQuestionsInfo = "\n做错的题目：\n";
-                    wrongQuestions.forEach((q, index) => {
-                        wrongQuestionsInfo += `题目 ${index + 1}: ${q.content}\n`;
-                    });
-                }
-
                 // 发送微信通知
-                await sendWxpusherNotification(score, wrongQuestionsInfo);
+                await sendWxpusherNotification(score, studentName, wrongQuestions);
 
                 // 显示结果
-                alert(`考试结束！得分: ${score}/${currentQuestions.length}`);
+                alert(`考试结束！考生 ${studentName} 得分: ${score}/${currentQuestions.length}`);
                 location.reload();
             } catch (error) {
                 alert(`提交失败: ${error.message}`);
             }
         }
 
-        // 计算分数
+        // 计算分数和记录答错的题目
         function calculateScore() {
             let score = 0;
             const wrongQuestions = [];
+
             currentQuestions.forEach((q, index) => {
                 const correctAnswers = q.correct;
                 const userAnswers = getAnswers(q.id, q.type);
+
                 if (arraysEqual(correctAnswers, userAnswers)) {
                     score++;
                 } else {
-                    wrongQuestions.push(q);
+                    wrongQuestions.push({
+                        question: q.content,
+                        userAnswer: userAnswers,
+                        correctAnswer: correctAnswers
+                    });
                 }
             });
+
             return { score, wrongQuestions };
         }
 
@@ -197,14 +198,24 @@
                 return [input.value.trim().toUpperCase()];
             }
             return Array.from(document.querySelectorAll(`input[name="q${id}"]:checked`))
-                .map(el => el.value);
+               .map(el => el.value);
         }
 
         // ================= Wxpusher通知功能 =================
-        async function sendWxpusherNotification(score, wrongQuestionsInfo) {
+        async function sendWxpusherNotification(score, studentName, wrongQuestions) {
+            let wrongQuestionsText = '';
+            if (wrongQuestions.length > 0) {
+                wrongQuestionsText = '\n\n答错的题目：\n';
+                wrongQuestions.forEach((q, index) => {
+                    wrongQuestionsText += `题目 ${index + 1}: ${q.question}\n`;
+                    wrongQuestionsText += `你的答案: ${q.userAnswer.join(', ')}\n`;
+                    wrongQuestionsText += `正确答案: ${q.correctAnswer.join(', ')}\n\n`;
+                });
+            }
+
             const message = {
                 appToken: WXPUSHER_CONFIG.APP_TOKEN,
-                content: `考试结果通知\n得分: ${score}/${currentQuestions.length}\n时间: ${new Date().toLocaleString()}${wrongQuestionsInfo}`,
+                content: `考试结果通知\n考生姓名: ${studentName}\n得分: ${score}/${currentQuestions.length}\n时间: ${new Date().toLocaleString()}${wrongQuestionsText}`,
                 uids: [WXPUSHER_CONFIG.UID],
                 verifyPay: false
             };
