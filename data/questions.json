@@ -1,39 +1,123 @@
 [
   {
     "id": 0,
-    "type": "text",
-    "content": "五星红旗上有几颗星星？请填写____。",
+    "type": "fillin",
+    "content": "I ____ (have) a new friend. （请用所给单词的适当形式填空）",
     "correct": [
-      "5"
+      "have"
     ],
     "options": []
   },
   {
     "id": 1,
+    "type": "fillin",
+    "content": "____ (he) name is Tom. （请用所给单词的适当形式填空）",
+    "correct": [
+      "His"
+    ],
+    "options": []
+  },
+  {
+    "id": 2,
+    "type": "fillin",
+    "content": "She ____ (be) from the UK. （请用所给单词的适当形式填空）",
+    "correct": [
+      "is"
+    ],
+    "options": []
+  },
+  {
+    "id": 3,
     "type": "radio",
-    "content": "哪种动物会汪汪叫？",
+    "content": "—Where are you from? —I'm from ____. （选择正确答案）",
     "correct": [
       "A"
     ],
     "options": [
       {
         "key": "A",
-        "value": "小狗"
+        "value": "China"
       },
       {
         "key": "B",
-        "value": "小猫"
+        "value": "chinese"
       },
       {
         "key": "C",
-        "value": "小鸡"
+        "value": "Chinese"
       }
     ]
   },
   {
-    "id": 2,
+    "id": 4,
+    "type": "radio",
+    "content": "We ____ two new friends today. （选择正确答案）",
+    "correct": [
+      "B"
+    ],
+    "options": [
+      {
+        "key": "A",
+        "value": "has"
+      },
+      {
+        "key": "B",
+        "value": "have"
+      },
+      {
+        "key": "C",
+        "value": "having"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "type": "radio",
+    "content": "This is Amy. ____ is a student. （选择正确答案）",
+    "correct": [
+      "A"
+    ],
+    "options": [
+      {
+        "key": "A",
+        "value": "She"
+      },
+      {
+        "key": "B",
+        "value": "He"
+      },
+      {
+        "key": "C",
+        "value": "her"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "type": "radio",
+    "content": "—Nice to see you again! —____ （选择正确答案）",
+    "correct": [
+      "B"
+    ],
+    "options": [
+      {
+        "key": "A",
+        "value": "Goodbye!"
+      },
+      {
+        "key": "B",
+        "value": "Nice to see you, too!"
+      },
+      {
+        "key": "C",
+        "value": "Welcome!"
+      }
+    ]
+  },
+  {
+    "id": 7,
     "type": "checkbox",
-    "content": "以下哪些是交通工具？（多选）",
+    "content": "以下哪些是国家名称？（多选）",
     "correct": [
       "A",
       "C"
@@ -41,341 +125,224 @@
     "options": [
       {
         "key": "A",
-        "value": "汽车"
+        "value": "USA"
       },
       {
         "key": "B",
-        "value": "书包"
+        "value": "teacher"
       },
       {
         "key": "C",
-        "value": "飞机"
+        "value": "Canada"
       },
       {
         "key": "D",
-        "value": "铅笔"
-      }
-    ]
-  },
-  {
-    "id": 3,
-    "type": "text",
-    "content": "请填写1 + 2 = ____。",
-    "correct": [
-      "3"
-    ],
-    "options": []
-  },
-  {
-    "id": 4,
-    "type": "radio",
-    "content": "哪个是红色的？",
-    "correct": [
-      "B"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "香蕉"
-      },
-      {
-        "key": "B",
-        "value": "苹果"
-      },
-      {
-        "key": "C",
-        "value": "葡萄"
-      }
-    ]
-  },
-  {
-    "id": 5,
-    "type": "checkbox",
-    "content": "以下哪些是天上飞的动物？（多选）",
-    "correct": [
-      "A",
-      "D"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "小鸟"
-      },
-      {
-        "key": "B",
-        "value": "乌龟"
-      },
-      {
-        "key": "C",
-        "value": "兔子"
-      },
-      {
-        "key": "D",
-        "value": "大雁"
-      }
-    ]
-  },
-  {
-    "id": 6,
-    "type": "text",
-    "content": "请填写一年有____个月。",
-    "correct": [
-      "12"
-    ],
-    "options": []
-  },
-  {
-    "id": 7,
-    "type": "radio",
-    "content": "哪种形状是圆形？",
-    "correct": [
-      "A"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "盘子"
-      },
-      {
-        "key": "B",
-        "value": "书本"
-      },
-      {
-        "key": "C",
-        "value": "黑板"
+        "value": "pupil"
       }
     ]
   },
   {
     "id": 8,
     "type": "checkbox",
-    "content": "以下哪些是蔬菜？（多选）",
-    "correct": [
-      "B",
-      "C"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "西瓜"
-      },
-      {
-        "key": "B",
-        "value": "黄瓜"
-      },
-      {
-        "key": "C",
-        "value": "胡萝卜"
-      },
-      {
-        "key": "D",
-        "value": "草莓"
-      }
-    ]
-  },
-  {
-    "id": 9,
-    "type": "text",
-    "content": "请填写一只手有____根手指。",
-    "correct": [
-      "5"
-    ],
-    "options": []
-  },
-  {
-    "id": 10,
-    "type": "radio",
-    "content": "哪个季节会下雪？",
-    "correct": [
-      "C"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "春天"
-      },
-      {
-        "key": "B",
-        "value": "夏天"
-      },
-      {
-        "key": "C",
-        "value": "冬天"
-      }
-    ]
-  },
-  {
-    "id": 11,
-    "type": "checkbox",
-    "content": "以下哪些是生活在水里的动物？（多选）",
+    "content": "以下哪些单词是形容人的？（多选）",
     "correct": [
       "A",
+      "B",
       "D"
     ],
     "options": [
       {
         "key": "A",
-        "value": "小鱼"
+        "value": "student"
       },
       {
         "key": "B",
-        "value": "小鸟"
+        "value": "teacher"
       },
       {
         "key": "C",
-        "value": "小猫"
+        "value": "book"
       },
       {
         "key": "D",
-        "value": "乌龟"
+        "value": "pupil"
       }
     ]
   },
   {
-    "id": 12,
-    "type": "text",
-    "content": "请填写3 - 1 = ____。",
+    "id": 9,
+    "type": "fillin",
+    "content": "Welcome ____ (back) to school. （请用所给单词的适当形式填空）",
     "correct": [
-      "2"
+      "back"
     ],
     "options": []
   },
   {
-    "id": 13,
-    "type": "radio",
-    "content": "哪个是三角形？",
+    "id": 10,
+    "type": "fillin",
+    "content": "I'm from the ____ (UK / USA). （请选择正确的国家名称填空）",
     "correct": [
-      "B"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "足球"
-      },
-      {
-        "key": "B",
-        "value": "三角尺"
-      },
-      {
-        "key": "C",
-        "value": "桌子"
-      }
-    ]
-  },
-  {
-    "id": 14,
-    "type": "checkbox",
-    "content": "以下哪些是文具？（多选）",
-    "correct": [
-      "A",
-      "B"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "铅笔"
-      },
-      {
-        "key": "B",
-        "value": "橡皮"
-      },
-      {
-        "key": "C",
-        "value": "帽子"
-      },
-      {
-        "key": "D",
-        "value": "鞋子"
-      }
-    ]
-  },
-  {
-    "id": 15,
-    "type": "text",
-    "content": "请填写一周有____天。",
-    "correct": [
-      "7"
+      "UK",
+      "USA"
     ],
     "options": []
   },
   {
-    "id": 16,
+    "id": 11,
     "type": "radio",
-    "content": "哪种动物会喵喵叫？",
-    "correct": [
-      "B"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "鸭子"
-      },
-      {
-        "key": "B",
-        "value": "小猫"
-      },
-      {
-        "key": "C",
-        "value": "老牛"
-      }
-    ]
-  },
-  {
-    "id": 17,
-    "type": "checkbox",
-    "content": "以下哪些是花朵？（多选）",
-    "correct": [
-      "A",
-      "C"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "玫瑰花"
-      },
-      {
-        "key": "B",
-        "value": "大树"
-      },
-      {
-        "key": "C",
-        "value": "向日葵"
-      },
-      {
-        "key": "D",
-        "value": "小草"
-      }
-    ]
-  },
-  {
-    "id": 18,
-    "type": "text",
-    "content": "请填写2 + 3 = ____。",
-    "correct": [
-      "5"
-    ],
-    "options": []
-  },
-  {
-    "id": 19,
-    "type": "radio",
-    "content": "哪个是黄色的？",
+    "content": "—____ is that woman? —She's my teacher. （选择正确答案）",
     "correct": [
       "A"
     ],
     "options": [
       {
         "key": "A",
-        "value": "香蕉"
+        "value": "Who"
       },
       {
         "key": "B",
-        "value": "蓝莓"
+        "value": "What"
       },
       {
         "key": "C",
-        "value": "茄子"
+        "value": "Where"
       }
     ]
+  },
+  {
+    "id": 12,
+    "type": "radio",
+    "content": "My friend ____ big eyes and a small nose. （选择正确答案）",
+    "correct": [
+      "B"
+    ],
+    "options": [
+      {
+        "key": "A",
+        "value": "have"
+      },
+      {
+        "key": "B",
+        "value": "has"
+      },
+      {
+        "key": "C",
+        "value": "is"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "type": "checkbox",
+    "content": "以下哪些句子表达正确？（多选）",
+    "correct": [
+      "A",
+      "C"
+    ],
+    "options": [
+      {
+        "key": "A",
+        "value": "I'm from China."
+      },
+      {
+        "key": "B",
+        "value": "He name is John."
+      },
+      {
+        "key": "C",
+        "value": "We have a new friend."
+      },
+      {
+        "key": "D",
+        "value": "She are a girl."
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "type": "fillin",
+    "content": "____ (We) new teacher is Miss White. （请用所给单词的适当形式填空）",
+    "correct": [
+      "Our"
+    ],
+    "options": []
+  },
+  {
+    "id": 15,
+    "type": "radio",
+    "content": "—Is he your brother? —____ （选择正确答案）",
+    "correct": [
+      "A"
+    ],
+    "options": [
+      {
+        "key": "A",
+        "value": "Yes, he is."
+      },
+      {
+        "key": "B",
+        "value": "Yes, she is."
+      },
+      {
+        "key": "C",
+        "value": "No, she isn't."
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "type": "checkbox",
+    "content": "以下哪些单词是表示家庭成员的？（多选）",
+    "correct": [
+      "A",
+      "B",
+      "D"
+    ],
+    "options": [
+      {
+        "key": "A",
+        "value": "father"
+      },
+      {
+        "key": "B",
+        "value": "mother"
+      },
+      {
+        "key": "C",
+        "value": "student"
+      },
+      {
+        "key": "D",
+        "value": "sister"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "type": "fillin",
+    "content": "He ____ (look) so funny. （请用所给单词的适当形式填空）",
+    "correct": [
+      "looks"
+    ],
+    "options": []
+  },
+  {
+    "id": 18,
+    "type": "radio",
+    "content": "—How many ____ (book / books) do you have? —I have ten. （选择正确答案）",
+    "correct": [
+      "books"
+    ],
+    "options": []
+  },
+  {
+    "id": 19,
+    "type": "fillin",
+    "content": "Let's ____ (play) a game. （请用所给单词的适当形式填空）",
+    "correct": [
+      "play"
+    ],
+    "options": []
   }
 ]
