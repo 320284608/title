@@ -1,8 +1,8 @@
 [
   {
     "id": 0,
-    "type": "fillin",
-    "content": "I ____ (have) a new friend. （请用所给单词的适当形式填空）",
+    "type": "text",
+    "content": "I ____ (have) a new friend. 请用所给单词的正确形式填空",
     "correct": [
       "have"
     ],
@@ -10,8 +10,8 @@
   },
   {
     "id": 1,
-    "type": "fillin",
-    "content": "____ (he) name is Tom. （请用所给单词的适当形式填空）",
+    "type": "text",
+    "content": "____ (he) name is Tom. 请用所给单词的正确形式填空",
     "correct": [
       "His"
     ],
@@ -19,8 +19,8 @@
   },
   {
     "id": 2,
-    "type": "fillin",
-    "content": "She ____ (be) from the UK. （请用所给单词的适当形式填空）",
+    "type": "text",
+    "content": "She ____ (be) from the UK. 请用所给单词的正确形式填空",
     "correct": [
       "is"
     ],
@@ -29,7 +29,7 @@
   {
     "id": 3,
     "type": "radio",
-    "content": "—Where are you from? —I'm from ____. （选择正确答案）",
+    "content": "—Where are you from? —I'm from ____.",
     "correct": [
       "A"
     ],
@@ -51,7 +51,7 @@
   {
     "id": 4,
     "type": "radio",
-    "content": "We ____ two new friends today. （选择正确答案）",
+    "content": "We ____ two new friends today.",
     "correct": [
       "B"
     ],
@@ -73,7 +73,7 @@
   {
     "id": 5,
     "type": "radio",
-    "content": "This is Amy. ____ is a student. （选择正确答案）",
+    "content": "This is Amy. ____ is a student.",
     "correct": [
       "A"
     ],
@@ -95,7 +95,7 @@
   {
     "id": 6,
     "type": "radio",
-    "content": "—Nice to see you again! —____ （选择正确答案）",
+    "content": "—Nice to see you again! —____",
     "correct": [
       "B"
     ],
@@ -171,8 +171,8 @@
   },
   {
     "id": 9,
-    "type": "fillin",
-    "content": "Welcome ____ (back) to school. （请用所给单词的适当形式填空）",
+    "type": "text",
+    "content": "Welcome ____ (back) to school. 请用所给单词的正确形式填空",
     "correct": [
       "back"
     ],
@@ -180,8 +180,8 @@
   },
   {
     "id": 10,
-    "type": "fillin",
-    "content": "I'm from the ____ (UK / USA). （请选择正确的国家名称填空）",
+    "type": "text",
+    "content": "I'm from the ____ (UK / USA). 请从括号中选择正确的国家名称填空",
     "correct": [
       "UK",
       "USA"
@@ -191,7 +191,7 @@
   {
     "id": 11,
     "type": "radio",
-    "content": "—____ is that woman? —She's my teacher. （选择正确答案）",
+    "content": "—____ is that woman? —She's my teacher.",
     "correct": [
       "A"
     ],
@@ -213,7 +213,7 @@
   {
     "id": 12,
     "type": "radio",
-    "content": "My friend ____ big eyes and a small nose. （选择正确答案）",
+    "content": "My friend ____ big eyes and a small nose.",
     "correct": [
       "B"
     ],
@@ -261,8 +261,8 @@
   },
   {
     "id": 14,
-    "type": "fillin",
-    "content": "____ (We) new teacher is Miss White. （请用所给单词的适当形式填空）",
+    "type": "text",
+    "content": "____ (We) new teacher is Miss White. 请用所给单词的正确形式填空",
     "correct": [
       "Our"
     ],
@@ -271,7 +271,7 @@
   {
     "id": 15,
     "type": "radio",
-    "content": "—Is he your brother? —____ （选择正确答案）",
+    "content": "—Is he your brother? —____",
     "correct": [
       "A"
     ],
@@ -320,8 +320,8 @@
   },
   {
     "id": 17,
-    "type": "fillin",
-    "content": "He ____ (look) so funny. （请用所给单词的适当形式填空）",
+    "type": "text",
+    "content": "He ____ (look) so funny. 请用所给单词的正确形式填空",
     "correct": [
       "looks"
     ],
@@ -329,8 +329,8 @@
   },
   {
     "id": 18,
-    "type": "radio",
-    "content": "—How many ____ (book / books) do you have? —I have ten. （选择正确答案）",
+    "type": "text",
+    "content": "—How many ____ (book / books) do you have? —I have ten. 请从括号中选择正确的单词填空",
     "correct": [
       "books"
     ],
@@ -338,8 +338,8 @@
   },
   {
     "id": 19,
-    "type": "fillin",
-    "content": "Let's ____ (play) a game. （请用所给单词的适当形式填空）",
+    "type": "text",
+    "content": "Let's ____ (play) a game. 请用所给单词的正确形式填空",
     "correct": [
       "play"
     ],
