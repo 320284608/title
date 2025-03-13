@@ -2,122 +2,38 @@
   {
     "id": 0,
     "type": "text",
-    "content": "I ____ (have) a new friend. 请用所给单词的正确形式填空",
+    "content": "请填写中国的首都是____。",
     "correct": [
-      "have"
+      "北京"
     ],
     "options": []
   },
   {
     "id": 1,
-    "type": "text",
-    "content": "____ (he) name is Tom. 请用所给单词的正确形式填空",
+    "type": "radio",
+    "content": "以下哪个是水果？",
     "correct": [
-      "His"
+      "A"
     ],
-    "options": []
+    "options": [
+      {
+        "key": "A",
+        "value": "苹果"
+      },
+      {
+        "key": "B",
+        "value": "白菜"
+      },
+      {
+        "key": "C",
+        "value": "土豆"
+      }
+    ]
   },
   {
     "id": 2,
-    "type": "text",
-    "content": "She ____ (be) from the UK. 请用所给单词的正确形式填空",
-    "correct": [
-      "is"
-    ],
-    "options": []
-  },
-  {
-    "id": 3,
-    "type": "radio",
-    "content": "—Where are you from? —I'm from ____.",
-    "correct": [
-      "A"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "China"
-      },
-      {
-        "key": "B",
-        "value": "chinese"
-      },
-      {
-        "key": "C",
-        "value": "Chinese"
-      }
-    ]
-  },
-  {
-    "id": 4,
-    "type": "radio",
-    "content": "We ____ two new friends today.",
-    "correct": [
-      "B"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "has"
-      },
-      {
-        "key": "B",
-        "value": "have"
-      },
-      {
-        "key": "C",
-        "value": "having"
-      }
-    ]
-  },
-  {
-    "id": 5,
-    "type": "radio",
-    "content": "This is Amy. ____ is a student.",
-    "correct": [
-      "A"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "She"
-      },
-      {
-        "key": "B",
-        "value": "He"
-      },
-      {
-        "key": "C",
-        "value": "her"
-      }
-    ]
-  },
-  {
-    "id": 6,
-    "type": "radio",
-    "content": "—Nice to see you again! —____",
-    "correct": [
-      "B"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "Goodbye!"
-      },
-      {
-        "key": "B",
-        "value": "Nice to see you, too!"
-      },
-      {
-        "key": "C",
-        "value": "Welcome!"
-      }
-    ]
-  },
-  {
-    "id": 7,
     "type": "checkbox",
-    "content": "以下哪些是国家名称？（多选）",
+    "content": "以下哪些是哺乳动物？（多选）",
     "correct": [
       "A",
       "C"
@@ -125,224 +41,20 @@
     "options": [
       {
         "key": "A",
-        "value": "USA"
+        "value": "猫"
       },
       {
         "key": "B",
-        "value": "teacher"
+        "value": "蛇"
       },
       {
         "key": "C",
-        "value": "Canada"
+        "value": "狗"
       },
       {
         "key": "D",
-        "value": "pupil"
+        "value": "金鱼"
       }
     ]
-  },
-  {
-    "id": 8,
-    "type": "checkbox",
-    "content": "以下哪些单词是形容人的？（多选）",
-    "correct": [
-      "A",
-      "B",
-      "D"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "student"
-      },
-      {
-        "key": "B",
-        "value": "teacher"
-      },
-      {
-        "key": "C",
-        "value": "book"
-      },
-      {
-        "key": "D",
-        "value": "pupil"
-      }
-    ]
-  },
-  {
-    "id": 9,
-    "type": "text",
-    "content": "Welcome ____ (back) to school. 请用所给单词的正确形式填空",
-    "correct": [
-      "back"
-    ],
-    "options": []
-  },
-  {
-    "id": 10,
-    "type": "text",
-    "content": "I'm from the ____ (UK / USA). 请从括号中选择正确的国家名称填空",
-    "correct": [
-      "UK",
-      "USA"
-    ],
-    "options": []
-  },
-  {
-    "id": 11,
-    "type": "radio",
-    "content": "—____ is that woman? —She's my teacher.",
-    "correct": [
-      "A"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "Who"
-      },
-      {
-        "key": "B",
-        "value": "What"
-      },
-      {
-        "key": "C",
-        "value": "Where"
-      }
-    ]
-  },
-  {
-    "id": 12,
-    "type": "radio",
-    "content": "My friend ____ big eyes and a small nose.",
-    "correct": [
-      "B"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "have"
-      },
-      {
-        "key": "B",
-        "value": "has"
-      },
-      {
-        "key": "C",
-        "value": "is"
-      }
-    ]
-  },
-  {
-    "id": 13,
-    "type": "checkbox",
-    "content": "以下哪些句子表达正确？（多选）",
-    "correct": [
-      "A",
-      "C"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "I'm from China."
-      },
-      {
-        "key": "B",
-        "value": "He name is John."
-      },
-      {
-        "key": "C",
-        "value": "We have a new friend."
-      },
-      {
-        "key": "D",
-        "value": "She are a girl."
-      }
-    ]
-  },
-  {
-    "id": 14,
-    "type": "text",
-    "content": "____ (We) new teacher is Miss White. 请用所给单词的正确形式填空",
-    "correct": [
-      "Our"
-    ],
-    "options": []
-  },
-  {
-    "id": 15,
-    "type": "radio",
-    "content": "—Is he your brother? —____",
-    "correct": [
-      "A"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "Yes, he is."
-      },
-      {
-        "key": "B",
-        "value": "Yes, she is."
-      },
-      {
-        "key": "C",
-        "value": "No, she isn't."
-      }
-    ]
-  },
-  {
-    "id": 16,
-    "type": "checkbox",
-    "content": "以下哪些单词是表示家庭成员的？（多选）",
-    "correct": [
-      "A",
-      "B",
-      "D"
-    ],
-    "options": [
-      {
-        "key": "A",
-        "value": "father"
-      },
-      {
-        "key": "B",
-        "value": "mother"
-      },
-      {
-        "key": "C",
-        "value": "student"
-      },
-      {
-        "key": "D",
-        "value": "sister"
-      }
-    ]
-  },
-  {
-    "id": 17,
-    "type": "text",
-    "content": "He ____ (look) so funny. 请用所给单词的正确形式填空",
-    "correct": [
-      "looks"
-    ],
-    "options": []
-  },
-  {
-    "id": 18,
-    "type": "text",
-    "content": "—How many ____ (book / books) do you have? —I have ten. 请从括号中选择正确的单词填空",
-    "correct": [
-      "books"
-    ],
-    "options": []
-  },
-  {
-    "id": 19,
-    "type": "text",
-    "content": "Let's ____ (play) a game. 请用所给单词的正确形式填空",
-    "correct": [
-      "play"
-    ],
-    "options": []
   }
 ]
