@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠佳曦烤地瓜🍠考试系统📝</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --background: #f8f9fa;
+            --text-color: #333;
+            --card-background: white;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui;
+            margin: 20px;
+            background: var(--background);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-background);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-card {
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin: 15px 0;
+            background: var(--card-background);
+        }
+
+        .timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+
+        button {
+            background: var(--secondary);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-switch button {
+            padding: 8px 16px;
+        }
+
+        #importInput {
+            display: none;
+        }
+
+        /* 夜间模式 */
+        .dark-mode {
+            --background: #121212;
+            --text-color: #d0d0d0;
+            --card-background: #1e1e1e;
+            --border-color: #333;
+            --primary: #1f1f1f;
+            --secondary: #4db8ff;
+        }
+
+        /* 护眼模式 */
+        .eye-protection-mode {
+            --background: #f5f5dc;
+            --text-color: #333;
+            --card-background: #fffff0;
+            --border-color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 模式切换 -->
+        <div class="mode-switch">
+            <button onclick="setMode('default')">默认模式</button>
+            <button onclick="setMode('dark')">夜间模式</button>
+            <button onclick="setMode('eye-protection')">护眼模式</button>
+        </div>
+
+        <!-- 考试界面 -->
+        <h1>佳曦🧨烤地瓜🍠在线考试系统📝</h1>
+        <label for="studentName">考生姓名:</label>
+        <input type="text" id="studentName" placeholder="请输入考生姓名" required>
+        <div class="timer" id="timer">剩余时间: 30:00</div>
+        <div id="questionContainer"></div>
+        <button onclick="submitExam()">提交试卷</button>
+        <button onclick="switchExam()">切换试卷</button>
+        <button onclick="triggerImport()">导入试卷</button>
+        <input type="file" id="importInput" accept=".json" onchange="importQuestions(event)">
+    </div>
+
+    <script>
+        // ================= 模式切换功能 =================
+        function setMode(mode) {
+            document.body.classList.remove('dark-mode', 'eye-protection-mode');
+            if (mode === 'dark') {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('mode', 'dark');
+            } else if (mode === 'eye-protection') {
+                document.body.classList.add('eye-protection-mode');
+                localStorage.setItem('mode', 'eye-protection');
+            } else {
+                localStorage.setItem('mode', 'default');
+            }
+        }
+
+        // 页面加载时应用模式
+        window.onload = function () {
+            const savedMode = localStorage.getItem('mode') || 'default';
+            setMode(savedMode);
+            initExam();
+        };
+
+        // ================= 考试系统核心逻辑 =================
+        let currentQuestions = [];
+        let currentExam = 'questions.json'; // 默认试卷
+        let timeLeft = 1800; // 30分钟
+        let timerInterval;
+
+        async function initExam() {
+            clearInterval(timerInterval); // 清除计时器
+            timeLeft = 1800; // 重置计时
+            document.getElementById('timer').textContent = `剩余时间: 30:00`;
+
+            try {
+                const response = await fetch(`./data/${currentExam}`);
+                if (!response.ok) {
+                    throw new Error(`无法加载试卷：${currentExam}`);
+                }
+                currentQuestions = await response.json();
+                renderQuestions();
+                startTimer();
+            } catch (error) {
+                console.error(error.message);
+                alert('加载试卷失败，请检查文件路径！');
+            }
+        }
+
+        // 切换试卷
+        function switchExam() {
+            currentExam = currentExam === 'questions.json' ? 'questions1.json' : 'questions.json';
+            initExam();
+        }
+
+        // 导入试卷
+        function triggerImport() {
+            document.getElementById('importInput').click();
+        }
+
+        function importQuestions(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!Array.isArray(data)) throw new Error('试卷格式无效，请检查文件内容！');
+                    currentQuestions = data;
+                    renderQuestions();
+                    alert('试卷导入成功！');
+                } catch (error) {
+                    alert(`导入失败：${error.message}`);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 渲染题目
+        function renderQuestions() {
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = currentQuestions.map((q, index) => `
+                <div class="question-card">
+                    <h3>题目 ${index + 1} (${q.type === 'text' ? '填空' : q.type === 'radio' ? '单选' : '多选'})</h3>
+                    <p>${q.content}</p>
+                    ${q.options ? q.options.map((opt, optIndex) => `
+                        <label style="display:block; margin:8px 0;">
+                            <input type="${q.type}" name="q${index}" value="${opt}">
+                            ${String.fromCharCode(65 + optIndex)}. ${opt}
+                        </label>
+                    `).join('') : ''}
+                    ${q.type === 'text' ? `
+                        <input type="text" style="width:100%; padding:8px;" 
+                               placeholder="请输入答案" data-question-id="${index}">
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // 计时器
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const seconds = (timeLeft % 60).toString().padStart(2, '0');
+                document.getElementById('timer').textContent = `剩余时间: ${minutes}:${seconds}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        // 提交考试
+        async function submitExam() {
+            clearInterval(timerInterval);
+
+            const studentName = document.getElementById('studentName').value.trim();
+            if (!studentName) {
+                alert('请输入考生姓名！');
+                return;
+            }
+
+            const { score, wrongQuestions } = calculateScore();
+            const timeUsed = 30 * 60 - timeLeft; // 用时（秒）
+            const minutesUsed = Math.floor(timeUsed / 60).toString().padStart(2, '0');
+            const secondsUsed = (timeUsed % 60).toString().padStart(2, '0');
+            const wrongQuestionNumbers = wrongQuestions.map(q => q.index + 1).join(', ');
+
+            // 弹出结果提示
+            const resultMessage = `🎉考试结束！\n\n👤考生姓名: ${studentName}\n📊得分: ${score}/${currentQuestions.length}\n⏱️用时: ${minutesUsed}:${secondsUsed}\n❌答错题目编号: ${wrongQuestionNumbers || '无'}\n\n是否推送结果到 Wxpusher？`;
+            if (confirm(resultMessage)) {
+                await sendWxpusherNotification(score, studentName, wrongQuestions, `${minutesUsed}:${secondsUsed}`);
+            }
+            location.reload();
+        }
+
+        // 发送 Wxpusher 通知
+        async function sendWxpusherNotification(score, studentName, wrongQuestions, timeUsed) {
+            let wrongQuestionsText = '';
+            if (wrongQuestions.length > 0) {
+                wrongQuestionsText = '\n\n答错的题目：\n';
+                wrongQuestions.forEach((q, index) => {
+                    wrongQuestionsText += `题目 ${index + 1}: ${q.question}\n`;
+                    wrongQuestionsText += `你的答案: ${q.userAnswer.join(', ')}\n`;
+                    wrongQuestionsText += `正确答案: ${q.correctAnswer.join(', ')}\n\n`;
+                });
+            }
+
+            const message = {
+                appToken: "AT_zPtKeskSAdhMLh2y62ylBQsjY9WvPGr4", // 替换为您的 AppToken
+                content: `考试结果通知\n👤考生姓名: ${studentName}\n📊得分: ${score}/${currentQuestions.length}\n⏱️用时: ${timeUsed}${wrongQuestionsText}`,
+                uids: ["UID_C74d13AbUID9y5zJPAL9nTdv8cNy"], // 替换为您的 UID
+                verifyPay: false
+            };
+
+            const response = await fetch('https://wxpusher.zjiecode.com/api/send/message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(message)
+            });
+
+            if (!response.ok) {
+                alert('通知发送失败！');
+            } else {
+                alert('通知已成功发送到 Wxpusher！');
+            }
+        }
+
+        // 计算分数和记录答错的题目
+        function calculateScore() {
+            let score = 0;
+            const wrongQuestions = [];
+
+            currentQuestions.forEach((q, index) => {
+                const correctAnswers = Array.isArray(q.correct) ? q.correct.map(a => a.toUpperCase()) : [q.correct.toUpperCase()];
+                const userAnswers = getAnswers(index, q.type);
+
+                if (arraysEqual(correctAnswers, userAnswers)) {
+                    score++;
+                } else {
+                    wrongQuestions.push({
+                        index,
+                        question: q.content,
+                        userAnswer: userAnswers,
+                        correctAnswer: correctAnswers
+                    });
+                }
+            });
+
+            return { score, wrongQuestions };
+        }
+
+        // 获取用户答案
+        function getAnswers(index, type) {
+            if (type === 'text') {
+                const input = document.querySelector(`input[data-question-id="${index}"]`);
+                return [input.value.trim().toUpperCase()];
+            }
+            return Array.from(document.querySelectorAll(`input[name="q${index}"]:checked`))
+                .map(el => el.value.toUpperCase());
+        }
+
+        // 工具函数：数组比较
+        function arraysEqual(a, b) {
+            return a.length === b.length && a.every((val, i) => val === b[i]);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+apple,苹果
+banana,香蕉
+cat,猫
+dog,狗
+egg,鸡蛋
+fish,鱼
+green,绿色
+hello,你好
+ice cream,冰淇淋
+jump,跳
+kite,风筝
+lion,狮子
+milk,牛奶
+nose,鼻子
+orange,橙色
+pig,猪
+queen,女王
+rabbit,兔子
+sun,太阳
+tiger,老虎
+umbrella,雨伞
+van,货车
+water,水
+box,盒子
+yellow,黄色
+zoo,动物园

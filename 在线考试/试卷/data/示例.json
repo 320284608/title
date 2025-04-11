@@ -1,0 +1,19 @@
+[
+    {
+        "type": "text",
+        "content": "简述HTTP协议的主要特点。",
+        "correct": "超文本传输协议，基于请求-响应模型"
+    },
+    {
+        "type": "radio",
+        "content": "以下哪个是JavaScript的基本数据类型？",
+        "options": ["String", "HTML", "CSS", "SQL"],
+        "correct": "String"
+    },
+    {
+        "type": "checkbox",
+        "content": "以下哪些是Web前端开发的三大核心技术？",
+        "options": ["HTML", "Python", "CSS", "JavaScript"],
+        "correct": ["HTML", "CSS", "JavaScript"]
+    }
+]

@@ -1,0 +1,767 @@
+ 
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>未来科技学习系统</title>
+    <style>
+         
+/* ================= 主题变量 ================= */
+:root {
+    --primary: #4a90e2;
+    --secondary: linear-gradient(45deg, #ff6b6b, #ff9f43);
+    --text-color: rgba(255, 255, 255, 0.9);
+    --card-bg: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    --glass-border: 1px solid rgba(255,255,255,0.1);
+    --shadow-color: 0 8px 32px rgba(0,0,0,0.37);
+}
+
+/* ================= 基础布局 ================= */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', system-ui, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: var(--text-color);
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* ================= 加载动画系统 ================= */
+.loading-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    display: grid;
+    place-items: center;
+    z-index: 9999;
+    animation: fadeOut 1s ease 3s forwards;
+}
+
+.loading-logo {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    animation: hologram 2.5s infinite ease-in-out;
+}
+
+.loading-logo::before,
+.loading-logo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+}
+
+.loading-logo::before {
+    border-top-color: #4a90e2;
+    border-bottom-color: #ff6b6b;
+    animation: spin 2s linear infinite;
+}
+
+.loading-logo::after {
+    border-left-color: #9b59b6;
+    border-right-color: #2ecc71;
+    animation: spinReverse 1.5s linear infinite;
+}
+
+.loading-text {
+    position: absolute;
+    bottom: -40px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.8);
+    animation: textGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.2); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes spinReverse {
+    0% { transform: rotate(0deg) scale(1.2); }
+    100% { transform: rotate(-360deg) scale(0.8); }
+}
+
+@keyframes hologram {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(74, 144, 226, 0.5)); }
+    50% { filter: drop-shadow(0 0 20px rgba(255,107,107,0.8)) 
+                 drop-shadow(0 0 30px rgba(155,89,182,0.6)); }
+}
+
+@keyframes textGlow {
+    from { text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+    to { text-shadow: 0 0 15px rgba(74, 144, 226, 0.8); }
+}
+
+/* ================= 动态粒子系统 ================= */
+.background {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    background: radial-gradient(circle, 
+        rgba(255,255,255,0.8) 10%, 
+        rgba(255,255,255,0.4) 70%, 
+        transparent 100%);
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    animation: float 6s infinite ease-in-out;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-100px) scale(1.2); }
+}
+
+/* ================= 分页系统 ================= */
+.page-container {
+    display: flex;
+    width: 200%;
+    height: 100vh;
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease;
+}
+
+.page {
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.page-indicator {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease;
+}
+
+.loaded .page-container,
+.loaded .page-indicator {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ================= 卡片系统 ================= */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding: 15px;
+    place-items: center;
+}
+
+.card {
+    position: relative;
+    width: 90%;
+    max-width: 220px;
+    height: 280px;
+    margin: 10px auto;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: all 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--card-bg);
+    border-radius: 15px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-color), 
+              15px 15px 30px rgba(0,0,0,0.3),
+              inset 2px 2px 5px rgba(255,255,255,0.2),
+              inset -2px -2px 5px rgba(0,0,0,0.2);
+    border: var(--glass-border);
+    transform: translateZ(10px);
+}
+
+.card:hover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        400px circle at var(--x) var(--y),
+        rgba(255,255,255,0.2),
+        transparent 40%
+    );
+    border-radius: 15px;
+}
+
+.card-content {
+    position: relative;
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+    position: relative;
+}
+
+.card h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--secondary);
+}
+
+/* ================= 交互按钮 ================= */
+.enter-btn {
+    padding: 10px 25px;
+    background: var(--secondary);
+    border: none;
+    border-radius: 30px;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.enter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg,
+        transparent,
+        rgba(255,255,255,0.3),
+        transparent);
+    transition: 0.6s;
+}
+
+.enter-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(255,107,107,0.4);
+}
+
+/* ================= 音乐播放器 ================= */
+.music-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.album-art {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    margin: 40px 0;
+    box-shadow: 0 0 30px rgba(255,107,107,0.4);
+    animation: rotate 20s linear infinite paused;
+}
+
+.playing .album-art {
+    animation-play-state: running;
+}
+
+@keyframes rotate {
+    100% { transform: rotate(360deg); }
+}
+
+.controls {
+    position: fixed;
+    bottom: 100px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--secondary);
+    color: white;
+    font-size: 24px;
+    transition: transform 0.2s;
+}
+
+/* ================= 响应式设计 ================= */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    .card {
+        max-width: 280px;
+        height: 320px;
+    }
+}
+
+/* ================= 工具类 ================= */
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transition: all 0.3s;
+}
+
+.dot.active {
+    background: var(--secondary);
+    transform: scale(1.2);
+}
+
+.study-page {
+    overflow-y: auto;
+    height: calc(100vh - 40px);
+    padding: 20px 10px;
+}
+
+.study-page::-webkit-scrollbar {
+    width: 6px;
+}
+
+.study-page::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+}
+
+.study-page::-webkit-scrollbar-thumb {
+    background: var(--secondary);
+    border-radius: 3px;
+}
+ 
+/* ================= 卡片系统 ================= */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 三列布局 */
+    gap: 1.5rem;
+    padding: 15px;
+    place-items: center;
+}
+
+.card {
+    position: relative;
+    width: 90%;
+    max-width: 200px;
+    height: 260px;
+    margin: 10px auto;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: all 0.6s cubic-bezier(0.4,0,0.2,1);
+    perspective: 1000px; /* 新增透视效果 */
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, 
+        rgba(255,255,255,0.2), /* 调整透明度 */
+        rgba(255,255,255,0.1));
+    border-radius: 15px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 20px rgba(0,0,0,0.3),
+                inset 0 0 15px rgba(255,255,255,0.2),
+                inset 0 -8px 20px rgba(0,0,0,0.2);
+    border: var(--glass-border);
+    transform: translateZ(20px); /* 增强立体高度 */
+}
+
+/* 3D边缘效果 */
+.card::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg,
+        rgba(255,255,255,0.4),
+        rgba(255,255,255,0.1));
+    border-radius: 17px;
+    filter: blur(4px);
+    transform: translateZ(-10px);
+    z-index: -1;
+}
+
+.card:hover {
+    transform: 
+        translateY(-10px) 
+        rotateX(8deg) 
+        rotateY(8deg)
+        scale(1.05);
+}
+
+/* 响应式调整 */
+@media (max-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr); /* 中等屏幕显示2列 */
+    }
+}
+
+@media (max-width: 640px) {
+    .grid {
+        grid-template-columns: 1fr; /* 小屏幕显示1列 */
+    }
+    .card {
+        max-width: 280px;
+        height: 320px;
+    }
+}
+ 
+      
+/* ================= 学习页面卡片系统 ================= */
+.study-page .grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* 自动适应列数 */
+    gap: 1rem;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.study-page .card {
+    max-width: 180px;
+    height: 200px;
+    margin: 0;
+}
+
+.study-page .card-content {
+    padding: 1rem;
+}
+
+.study-page h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.study-page .enter-btn {
+    padding: 6px 15px;
+    font-size: 0.85rem;
+}
+
+/* 响应式调整 */
+@media (min-width: 768px) {
+    .study-page .grid {
+        grid-template-columns: repeat(3, 1fr); /* 桌面端显示3列 */
+    }
+}
+
+@media (max-width: 767px) {
+    .study-page .grid {
+        grid-template-columns: repeat(2, 1fr); /* 移动端显示2列 */
+    }
+    .study-page .card {
+        max-width: 160px;
+        height: 180px;
+    }
+}
+
+
+/* 移除或修改以下部分 */
+@media (max-width: 480px) {
+    .study-page .grid {
+        grid-template-columns: repeat(2, 1fr); /* 保持两列 */
+    }
+    .study-page .card {
+        max-width: 140px; /* 进一步缩小卡片尺寸以适应小屏幕 */
+        height: 160px;
+    }
+}
+
+ 
+    </style>
+</head>
+
+<body>
+    <!-- 修改body中的加载动画部分 -->
+    <div class="loading-screen">
+        <div class="loading-logo">
+            <div class="core"></div>
+            <div class="loading-text">佳曦大脑🧠启动中……</div>
+        </div>
+    </div>
+     
+
+    <!-- 背景粒子 -->
+    <div class="background"></div>
+
+    <!-- 分页容器 -->
+    <div class="page-container">
+        <!-- 第一页：学习系统 -->
+         
+<div class="page study-page">
+    <div class="grid">
+        <article class="card" data-path="./quantum/index.html">
+            <div class="card-content">
+                <h2>量子物理</h2>
+                <button class="enter-btn">开始探索</button>
+            </div>
+        </article>
+        <article class="card" data-path="./ai/index.html">
+            <div class="card-content">
+                <h2>人工智能</h2>
+                <button class="enter-btn">开始探索</button>
+            </div>
+        </article>
+        <article class="card" data-path="./space/index.html">
+            <div class="card-content">
+                <h2>太空探索</h2>
+                <button class="enter-btn">开始探索</button>
+            </div>
+        </article>
+        <article class="card" data-path="./gene/index.html">
+            <div class="card-content">
+                <h2>基因工程</h2>
+                <button class="enter-btn">开始探索</button>
+            </div>
+        </article>
+        <article class="card" data-path="./neuroscience/index.html">
+            <div class="card-content">
+                <h2>神经科学</h2>
+                <button class="enter-btn">开始探索</button>
+            </div>
+        </article>
+        <!-- 新增第六个卡片 -->
+        <article class="card" data-path="./biotech/index.html">
+            <div class="card-content">
+                <h2>生物科技</h2>
+                <button class="enter-btn">开始探索</button>
+            </div>
+        </article>
+    </div>
+</div>
+ 
+
+        <!-- 第二页：音乐播放器 -->
+        <div class="page music-page">
+            <div class="music-player">
+                <img src="default-album.jpg" class="album-art" alt="专辑封面">
+                <h2 class="song-title">歌曲名称</h2>
+                <p class="artist">艺术家</p>
+                <div class="progress-container">
+                    <div class="progress"></div>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" id="prev">⏮</button>
+                    <button class="control-btn" id="play">▶</button>
+                    <button class="control-btn" id="next">⏭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-indicator">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+    </div>
+
+    <script>
+        // 新增：滚动冲突处理
+        let startY = 0;
+        const studyPage = document.querySelector('.study-page');
+
+        studyPage.addEventListener('touchstart', e => {
+            startY = e.touches[0].clientY;
+        }, {
+            passive: true
+        });
+
+        studyPage.addEventListener('touchmove', e => {
+            const deltaY = e.touches[0].clientY - startY;
+            // 垂直滚动时禁止水平滑动
+            if (Math.abs(deltaY) > 5) {
+                e.stopPropagation();
+            }
+        }, {
+            passive: true
+        });
+        // 动态光效追踪
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--x', `${e.clientX - rect.left}px`);
+                card.style.setProperty('--y', `${e.clientY - rect.top}px`);
+            });
+        });
+
+        // 粒子系统初始化
+        function initParticles() {
+            const background = document.querySelector('.background');
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+
+                particle.style.cssText = `
+                    width: ${Math.random() * 8 + 2}px;
+                    height: ${Math.random() * 8 + 2}px;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation: float ${6 + Math.random() * 6}s ${Math.random() * 3}s infinite;
+                `;
+
+                background.appendChild(particle);
+            }
+        }
+
+        // 页面切换逻辑
+        let currentPage = 0;
+        const container = document.querySelector('.page-container');
+        const dots = document.querySelectorAll('.dot');
+
+        // 触摸滑动处理
+        let touchStartX = 0;
+        document.body.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.body.addEventListener('touchend', e => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > 50) {
+                if (diff > 0 && currentPage < 1) {
+                    currentPage++;
+                } else if (diff < 0 && currentPage > 0) {
+                    currentPage--;
+                }
+                updatePage();
+            }
+        });
+
+        function updatePage() {
+            container.style.transform = `translateX(-${currentPage * 50}%)`;
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentPage);
+            });
+        }
+
+        // 音乐播放器逻辑
+        const audio = new Audio();
+        const playBtn = document.getElementById('play');
+        const progress = document.querySelector('.progress');
+        const albumArt = document.querySelector('.album-art');
+
+        const playlist = [{
+                title: '示例歌曲1',
+                artist: '示例艺术家',
+                src: 'music1.mp3',
+                cover: 'cover1.jpg'
+            },
+            // 添加更多歌曲...
+        ];
+
+        let currentSong = 0;
+        let isPlaying = false;
+
+        function loadSong() {
+            const song = playlist[currentSong];
+            audio.src = song.src;
+            albumArt.src = song.cover;
+            document.querySelector('.song-title').textContent = song.title;
+            document.querySelector('.artist').textContent = song.artist;
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            const progressPercent = (audio.currentTime / audio.duration) * 100;
+            progress.style.width = `${progressPercent}%`;
+        });
+
+        audio.addEventListener('ended', () => {
+            currentSong = (currentSong + 1) % playlist.length;
+            loadSong();
+            if (isPlaying) audio.play();
+        });
+
+        playBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                audio.play();
+                playBtn.textContent = '⏸';
+                albumArt.classList.add('playing');
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶';
+                albumArt.classList.remove('playing');
+            }
+        });
+
+        // 初始化
+        window.addEventListener('load', () => {
+            initParticles();
+                // 先隐藏所有内容
+            document.body.style.overflow = 'hidden';
+  
+            setTimeout(() => {
+                // 先移除加载动画
+        document.querySelector('.loading-screen').remove();
+        
+        // 添加加载完成类
+        document.body.classList.add('loaded');
+        document.body.style.overflow = '';
+        
+        // 执行卡片动画
+        document.querySelectorAll('.card').forEach((card, i) => {
+            card.style.animation = `cardEntrance 0.6s ${i * 0.1}s ease-out both`;
+        });
+    }, 3000); // 保持3秒加载时间
+
+
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('click', () => {
+                    window.location.href = card.dataset.path;
+                });
+            });
+
+            loadSong();
+        });
+
+        // 卡片入场动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes cardEntrance {
+                from {
+                    opacity: 0;
+                    transform: translateY(50px) rotateX(45deg);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) rotateX(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>
+ 
+
+  
+ 

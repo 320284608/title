@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>👨‍💻佳曦 ୧⍢⃝୨消消单词⚔️</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #212121;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            color: white;
+            touch-action: none;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 600px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #info-container {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 5%;
+            font-size: 18px;
+            box-sizing: border-box;
+        }
+
+        #game-board {
+            width: 100%;
+            flex-grow: 1;
+            background: #333;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 手机控制样式 */
+        .mobile-controls {
+            display: none;
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .joystick-knob {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+        }
+
+        .control-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* PC方向键样式 */
+        .pc-controls {
+            display: none;
+            width: 400px;
+            justify-content: center;
+            flex-wrap: wrap;
+            background-color: transparent;
+            gap: 10px;
+        }
+
+        .pc-controls > div {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pc-controls span {
+            cursor: pointer;
+            position: relative;
+            height: 60px;
+            width: 60px;
+            padding: 8px 15px;
+            margin: 4px;
+            display: inline-block;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #282828, #202020);
+            box-shadow: inset -8px 0 8px rgba(0, 0, 0, 0.15),
+                inset 0 -8px 8px rgba(0, 0, 0, 0.25), 
+                0 0 0 2px rgba(0, 0, 0, 0.75),
+                10px 20px 25px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: none;
+        }
+
+        .pc-controls span::before {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 4px;
+            bottom: 14px;
+            right: 12px;
+            background: linear-gradient(90deg, #232323, #4a4a4a);
+            border-radius: 10px;
+            box-shadow: -10px -10px 10px rgba(255, 255, 255, 0.25),
+                10px 5px 10px rgba(0, 0, 0, 0.15);
+            border-left: 1px solid #0004;
+            border-bottom: 1px solid #0004;
+            border-top: 1px solid #0009;
+        }
+
+        .pc-controls i {
+            font-family: "Montserrat", sans-serif;
+            position: relative;
+            font-style: normal;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        /* 设备适配 */
+        @media (hover: hover) and (pointer: fine) {
+            .pc-controls { display: flex; }
+            .mobile-controls { display: none !important; }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .mobile-controls { display: block; }
+            .pc-controls { display: none !important; }
+        }
+
+        #control-container {
+            width: 100%;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        #action-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="info-container">
+            <div id="target-word">目标单词：</div>
+            <div id="level">关卡：1</div>
+            <div id="timer">用时：0s</div>
+        </div>
+        
+        <div id="game-board">
+            <canvas id="game-canvas"></canvas>
+        </div>
+
+        <div id="control-container">
+            <div class="mobile-controls">
+                <div class="joystick-knob"></div>
+            </div>
+            
+            <div class="pc-controls">
+                <div>
+                    <span data-direction="up"><i>W</i></span>
+                </div>
+                <div>
+                    <span data-direction="left"><i>A</i></span>
+                    <span data-direction="down"><i>S</i></span>
+                    <span data-direction="right"><i>D</i></span>
+                </div>
+            </div>
+
+            <button class="control-button" id="restart-btn">重开</button>
+
+            <!-- 在control-container内添加文件上传控件和其他按钮 -->
+            <div id="action-container">
+                <input type="file" id="wordFile" accept=".txt" hidden>
+                <button onclick="document.getElementById('wordFile').click()" 
+                        style="padding: 8px 15px; background: #4CAF50; color: white; border: none; border-radius: 5px;">
+                    上传单词表
+                </button>
+                <button id="muteBtn">静音</button>
+                <select id="listSelector" style="margin-top: 10px;">
+                    <option value="default">默认列表</option>
+                    <option value="animals">动物列表</option>
+                    <option value="colors">颜色列表</option>
+                    <option value="bodyParts">身体列表</option>
+                    <option value="familyMembers">家人义列表</option>
+                    <option value="timeRelated">日期列表</option>
+                    <option value="weekdays">星期列表</option>
+                    <option value="monthsAndSeasons">月份列表</option>
+                    
+                </select>
+            </div>
+        </div>
+    </div>
+
+<script>
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const targetWordElement = document.getElementById('target-word');
+const levelElement = document.getElementById('level');
+const timerElement = document.getElementById('timer');
+const joystickKnob = document.querySelector('.joystick-knob');
+
+// 游戏配置
+const CELL_SIZE = 40;
+const INITIAL_LENGTH = 1;
+const MAX_WORD_LENGTH = 8;
+
+// 游戏状态
+let gameState = {
+    snake: [],
+    food: [],
+    targetWord: '',
+    currentLetterIndex: 0,
+    level: 1,
+    isGameActive: false,
+    startTime: 0,
+    direction: { x: 0, y: 0 },
+    words: [
+        { en: 'apple', zh: '苹果' },
+        { en: 'banana', zh: '香蕉' },
+        { en: 'cherry', zh: '樱桃' },
+        { en: 'date', zh: '枣' },
+        { en: 'fig', zh: '无花果' },
+        { en: 'grape', zh: '葡萄' },
+        { en: 'lemon', zh: '柠檬' },
+        { en: 'mango', zh: '芒果' },
+        { en: 'melon', zh: '瓜' },
+        { en: 'orange', zh: '橙子' },
+        { en: 'peach', zh: '桃子' },
+        { en: 'pear', zh: '梨' },
+        { en: 'plum', zh: '李子' },
+        { en: 'pineapple', zh: '菠萝' },
+        { en: 'strawberry', zh: '草莓' },
+        { en: 'watermelon', zh: '西瓜' }
+    ],
+    currentWordIndex: 0,
+    lastPlayTime: 0
+};
+
+// 音频管理
+const audio = {
+    enabled: true,
+    currentAudio: null,
+    play: async function(word) {
+        if (!this.enabled || !word) return;
+        
+        try {
+            this.currentAudio?.pause();
+            const audio = new Audio(`https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}`);
+            await audio.play();
+            this.currentAudio = audio;
+        } catch (error) {
+            console.log('音频播放失败:', error);
+        }
+    }
+};
+
+// 初始化游戏
+function initGame() {
+    resizeCanvas();
+    
+    gameState = {
+        snake: [{ 
+            x: canvas.width/2, 
+            y: canvas.height/2,
+            radius: CELL_SIZE/2 
+        }],
+        food: [],
+        targetWord: generateRandomWord(),
+        currentLetterIndex: 0,
+        level: 1,
+        isGameActive: true,
+        startTime: Date.now(),
+        direction: { x: 0, y: 0 },
+        words: gameState.words,
+        currentWordIndex: 0,
+        lastPlayTime: Date.now()
+    };
+    
+    updateDisplay();
+    generateFood();
+    audio.play(gameState.targetWord.en.toLowerCase());
+    gameLoop();
+}
+
+function resizeCanvas() {
+    const container = document.getElementById('game-board');
+    canvas.width = container.offsetWidth;
+    canvas.height = container.offsetHeight;
+}
+
+function generateRandomWord() {
+    const word = gameState.words.length > 0 
+        ? gameState.words[Math.floor(Math.random() * gameState.words.length)]
+        : { en: '', zh: '' };
+    return word;
+}
+
+function generateFood() {
+    gameState.food = [];
+    gameState.targetWord.en.split('').forEach(letter => {
+        let pos;
+        do {
+            pos = {
+                x: CELL_SIZE/2 + Math.random() * (canvas.width - CELL_SIZE),
+                y: CELL_SIZE/2 + Math.random() * (canvas.height - CELL_SIZE),
+                letter: letter,
+                radius: CELL_SIZE/2
+            };
+        } while(checkCollision(pos));
+        gameState.food.push(pos);
+    });
+}
+
+function checkCollision(obj) {
+    return [...gameState.snake, ...gameState.food].some(item => {
+        const dx = item.x - obj.x;
+        const dy = item.y - obj.y;
+        return Math.sqrt(dx*dx + dy*dy) < (item.radius + obj.radius);
+    });
+}
+
+function gameLoop() {
+    if(!gameState.isGameActive) return;
+    
+    // 每5秒重复播放当前单词
+    if(Date.now() - gameState.lastPlayTime > 5000) {
+        audio.play(gameState.targetWord.en.toLowerCase());
+        gameState.lastPlayTime = Date.now();
+    }
+    
+    updateSnakePosition();
+    checkFoodCollision();
+    checkWallCollision();
+    drawGame();
+    
+    requestAnimationFrame(gameLoop);
+    updateTimer();
+}
+
+function updateSnakePosition() {
+    const speed = CELL_SIZE * 0.08;
+    const head = { 
+        x: gameState.snake[0].x + gameState.direction.x * speed,
+        y: gameState.snake[0].y + gameState.direction.y * speed,
+        radius: CELL_SIZE/2
+    };
+    
+    gameState.snake.unshift(head);
+    gameState.snake.pop();
+}
+
+function checkFoodCollision() {
+    gameState.food.forEach((food, index) => {
+        const dx = food.x - gameState.snake[0].x;
+        const dy = food.y - gameState.snake[0].y;
+        const distance = Math.sqrt(dx*dx + dy*dy);
+        
+        if(distance < CELL_SIZE) {
+            if(food.letter === gameState.targetWord.en[gameState.currentLetterIndex]) {
+                gameState.food.splice(index, 1);
+                gameState.currentLetterIndex++;
+                if(gameState.currentLetterIndex === gameState.targetWord.en.length) {
+                    nextLevel();
+                }
+            }
+        }
+    });
+}
+
+function nextLevel() {
+    audio.play(gameState.targetWord.en.toLowerCase());
+    gameState.currentWordIndex++;
+    if(gameState.currentWordIndex < gameState.words.length) {
+        gameState.level++;
+        gameState.currentLetterIndex = 0;
+        gameState.targetWord = generateRandomWord();
+        generateFood();
+        updateDisplay();
+        audio.play(gameState.targetWord.en.toLowerCase());
+    } else {
+        endGame();
+    }
+}
+
+function checkWallCollision() {
+    const head = gameState.snake[0];
+    if(head.x < 0 || head.x > canvas.width || head.y < 0 || head.y > canvas.height) {
+        endGame();
+    }
+}
+
+function drawGame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 绘制蛇
+    gameState.snake.forEach((segment, index) => {
+        ctx.beginPath();
+        ctx.arc(segment.x, segment.y, segment.radius, 0, Math.PI*2);
+        ctx.fillStyle = index === 0 ? '#4CAF50' : '#2196F3';
+        ctx.fill();
+    });
+    
+    // 绘制食物
+    gameState.food.forEach(food => {
+        ctx.beginPath();
+        ctx.arc(food.x, food.y, food.radius, 0, Math.PI*2);
+        ctx.fillStyle = '#FF5722';
+        ctx.fill();
+        
+        ctx.fillStyle = 'white';
+        ctx.font = `${CELL_SIZE/2}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(food.letter, food.x, food.y);
+    });
+}
+
+function updateTimer() {
+    const elapsed = Math.floor((Date.now() - gameState.startTime)/1000);
+    timerElement.textContent = `用时：${elapsed}s`;
+}
+
+function updateDisplay() {
+    targetWordElement.innerHTML = `目标单词：${gameState.targetWord.en} (${gameState.targetWord.zh})`;
+    levelElement.textContent = `关卡：${gameState.level}`;
+}
+
+function endGame() {
+    gameState.isGameActive = false;
+    const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+    if (gameState.currentWordIndex >= gameState.words.length) {
+        alert(`恭喜！你完成了所有关卡！总用时：${elapsed}s`);
+    } else {
+        alert(`游戏结束！总关卡数：${gameState.level}`);
+    }
+}
+
+// 输入控制
+let isTouching = false;
+const joystickBase = document.querySelector('.mobile-controls');
+
+// 虚拟摇杆事件
+joystickBase.addEventListener('touchstart', e => {
+    isTouching = true;
+    updateJoystick(e.touches[0]);
+    e.preventDefault();
+});
+
+joystickBase.addEventListener('touchmove', e => {
+    if(isTouching) updateJoystick(e.touches[0]);
+    e.preventDefault();
+});
+
+joystickBase.addEventListener('touchend', () => {
+    isTouching = false;
+    joystickKnob.style.transform = 'translate(-50%, -50%)';
+    gameState.direction = { x: 0, y: 0 };
+});
+
+function updateJoystick(touch) {
+    const rect = joystickBase.getBoundingClientRect();
+    const centerX = rect.left + rect.width/2;
+    const centerY = rect.top + rect.height/2;
+    
+    const deltaX = touch.clientX - centerX;
+    const deltaY = touch.clientY - centerY;
+    const distance = Math.min(Math.hypot(deltaX, deltaY), 40);
+    const angle = Math.atan2(deltaY, deltaX);
+    
+    joystickKnob.style.transform = `
+        translate(calc(${Math.cos(angle) * distance}px - 50%), 
+                  calc(${Math.sin(angle) * distance}px - 50%))`;
+    
+    gameState.direction.x = Math.cos(angle);
+    gameState.direction.y = Math.sin(angle);
+}
+
+// 方向键控制
+document.querySelectorAll('[data-direction]').forEach(btn => {
+    btn.addEventListener('mousedown', handleDirectionStart);
+    btn.addEventListener('touchstart', e => {
+        e.preventDefault();
+        handleDirectionStart(e);
+    });
+});
+
+function handleDirectionStart(e) {
+    const direction = e.target.closest('[data-direction]').dataset.direction;
+    const directions = {
+        up: { x: 0, y: -1 },
+        left: { x: -1, y: 0 },
+        down: { x: 0, y: 1 },
+        right: { x: 1, y: 0 }
+    };
+    gameState.direction = directions[direction];
+}
+
+// 释放方向控制
+['mouseup', 'touchend'].forEach(event => {
+    document.addEventListener(event, () => {
+        gameState.direction = { x: 0, y: 0 };
+    });
+});
+
+// 键盘控制（新增回车和空格键支持）
+document.addEventListener('keydown', (e) => {
+    // 方向控制
+    const keyMap = {
+        'w': {x:0,y:-1}, 'ArrowUp': {x:0,y:-1},
+        'a': {x:-1,y:0}, 'ArrowLeft': {x:-1,y:0},
+        's': {x:0,y:1}, 'ArrowDown': {x:0,y:1},
+        'd': {x:1,y:0}, 'ArrowRight': {x:1,y:0}
+    };
+    
+    // 重开控制
+    if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault(); // 阻止空格键默认滚动行为
+        initGame();
+        return;
+    }
+
+    if(keyMap[e.key]) {
+        gameState.direction = keyMap[e.key];
+    }
+});
+
+// 静音按钮功能
+document.getElementById('muteBtn').addEventListener('click', () => {
+    audio.enabled = !audio.enabled;
+    document.getElementById('muteBtn').textContent = audio.enabled ? '静音' : '取消静音';
+});
+
+// 初始化
+window.addEventListener('resize', () => {
+    if(gameState.isGameActive) {
+        resizeCanvas();
+        generateFood();
+    }
+});
+document.getElementById('restart-btn').addEventListener('click', initGame);
+
+// 单词列表管理
+// 单词列表管理
+const wordLists = {
+    default: [
+        { en: 'apple', zh: '苹果' },
+        { en: 'banana', zh: '香蕉' },
+        { en: 'cherry', zh: '樱桃' },
+        { en: 'date', zh: '枣' },
+        { en: 'fig', zh: '无花果' },
+        { en: 'grape', zh: '葡萄' },
+        { en: 'lemon', zh: '柠檬' },
+        { en: 'mango', zh: '芒果' },
+        { en: 'melon', zh: '瓜' },
+        { en: 'orange', zh: '橙子' },
+        { en: 'peach', zh: '桃子' },
+        { en: 'pear', zh: '梨' },
+        { en: 'plum', zh: '李子' },
+        { en: 'pineapple', zh: '菠萝' },
+        { en: 'strawberry', zh: '草莓' },
+        { en: 'watermelon', zh: '西瓜' },
+        { en: 'kiwi', zh: '猕猴桃' },
+        { en: 'blueberry', zh: '蓝莓' },
+        { en: 'raspberry', zh: '覆盆子' },
+        { en: 'blackberry', zh: '黑莓' }
+    ],
+    animals: [
+        { en: 'cat', zh: '猫' },
+        { en: 'dog', zh: '狗' },
+        { en: 'elephant', zh: '大象' },
+        { en: 'giraffe', zh: '长颈鹿' },
+        { en: 'lion', zh: '狮子' },
+        { en: 'tiger', zh: '老虎' },
+        { en: 'zebra', zh: '斑马' },
+        { en: 'monkey', zh: '猴子' }
+    ],
+    colors: [
+        { en: 'red', zh: '红色' },
+        { en: 'blue', zh: '蓝色' },
+        { en: 'green', zh: '绿色' },
+        { en: 'yellow', zh: '黄色' },
+        { en: 'black', zh: '黑色' },
+        { en: 'white', zh: '白色' },
+        { en: 'pink', zh: '粉色' },
+        { en: 'orange', zh: '橙色' }
+    ],
+    bodyParts: [
+        { en: 'head', zh: '头' },
+        { en: 'eye', zh: '眼睛' },
+        { en: 'ear', zh: '耳朵' },
+        { en: 'nose', zh: '鼻子' },
+        { en: 'mouth', zh: '嘴巴' },
+        { en: 'neck', zh: '脖子' },
+        { en: 'hair', zh: '头发' },
+        { en: 'face', zh: '脸' },
+        { en: 'cheek', zh: '脸颊' },
+        { en: 'lip', zh: '嘴唇' },
+        { en: 'finger', zh: '手指' },
+        { en: 'leg', zh: '腿' },
+        { en: 'knee', zh: '膝盖' },
+        { en: 'foot', zh: '脚' },
+        { en: 'toe', zh: '脚趾' },
+        { en: 'arm', zh: '手臂' },
+        { en: 'hand', zh: '手' }
+    ],
+    familyMembers: [
+        { en: 'father', zh: '父亲' },
+        { en: 'mother', zh: '母亲' },
+        { en: 'son', zh: '儿子' },
+        { en: 'daughter', zh: '女儿' },
+        { en: 'brother', zh: '兄弟' },
+        { en: 'sister', zh: '姐妹' },
+        { en: 'grandpa', zh: '爷爷/外公' },
+        { en: 'grandma', zh: '奶奶/外婆' },
+        { en: 'aunt', zh: '姨妈/姑妈' },
+        { en: 'uncle', zh: '叔叔/舅舅' },
+        { en: 'cousin', zh: '堂(表)兄弟姐妹' },
+        { en: 'twins', zh: '双胞胎' }
+    ],
+    timeRelated: [
+        { en: 'year', zh: '年' },
+        { en: 'month', zh: '月' },
+        { en: 'week', zh: '周' },
+        { en: 'day', zh: '天' },
+        { en: 'hour', zh: '小时' },
+        { en: 'minute', zh: '分钟' },
+        { en: 'second', zh: '秒' },
+        { en: 'morning', zh: '早上' },
+        { en: 'afternoon', zh: '下午' },
+        { en: 'evening', zh: '晚上' },
+        { en: 'night', zh: '夜晚' },
+        { en: 'today', zh: '今天' },
+        { en: 'yesterday', zh: '昨天' },
+        { en: 'tomorrow', zh: '明天' }
+    ],
+    weekdays: [
+        { en: 'monday', zh: '星期一' },
+        { en: 'tuesday', zh: '星期二' },
+        { en: 'wednesday', zh: '星期三' },
+        { en: 'thursday', zh: '星期四' },
+        { en: 'friday', zh: '星期五' },
+        { en: 'saturday', zh: '星期六' },
+        { en: 'sunday', zh: '星期天' }
+    ],
+    monthsAndSeasons: [
+        { en: 'january', zh: '一月' },
+        { en: 'february', zh: '二月' },
+        { en: 'march', zh: '三月' },
+        { en: 'april', zh: '四月' },
+        { en: 'may', zh: '五月' },
+        { en: 'june', zh: '六月' },
+        { en: 'july', zh: '七月' },
+        { en: 'august', zh: '八月' },
+        { en: 'september', zh: '九月' },
+        { en: 'october', zh: '十月' },
+        { en: 'november', zh: '十一月' },
+        { en: 'december', zh: '十二月' },
+        { en: 'spring', zh: '春天' },
+        { en: 'summer', zh: '夏天' },
+        { en: 'autumn', zh: '秋天' },
+        { en: 'winter', zh: '冬天' }
+    ]
+};
+
+
+// 列表选择器
+const listSelector = document.getElementById('listSelector');
+listSelector.addEventListener('change', (e) => {
+    const list = e.target.value;
+    gameState.words = list === 'custom' ? gameState.words : [...wordLists[list]];
+    initGame();
+});
+
+// 文件上传处理
+document.getElementById('wordFile').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+        const text = await file.text();
+        const words = text.split('\n')
+            .map(line => {
+                const [en, zh] = line.split(',').map(part => part.trim());
+                return { en, zh };
+            })
+            .filter(line => line.en.length > 0 && line.zh.length > 0);
+        
+        wordLists.custom = words;
+        gameState.words = words;
+        listSelector.value = 'custom';
+        initGame();
+    } catch (error) {
+        alert('文件读取失败: ' + error.message);
+    }
+});
+
+// 初始化游戏
+initGame();
+</script>
+</body>
+</html>

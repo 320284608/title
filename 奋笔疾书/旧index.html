@@ -1,0 +1,398 @@
+;<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语学习笨鸟先飞系统</title>
+    <style>
+        :root {
+            --primary-color: #673AB7;
+            --secondary-color: #4CAF50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* 顶部菜单栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu {
+            display: flex;
+            gap: 25px;
+        }
+
+        .menu-item {
+            color: #666;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .menu-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .search-box {
+            width: 200px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 70%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+        }
+
+        .progress-fill {
+            width: 4%;
+            height: 100%;
+            background: var(--secondary-color);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .timer {
+            color: var(--primary-color);
+            font-family: monospace;
+        }
+
+        /* 题目区域 */
+        .question-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 25px 0;
+        }
+
+        .chinese-word {
+            font-size: 2.5em;
+            margin: 20px 0;
+            color: var(--primary-color);
+        }
+
+        .underline {
+            width: 60px;
+            height: 3px;
+            background: var(--primary-color);
+            margin: 0 auto;
+        }
+
+        .answer-input {
+            width: 80%;
+            padding: 12px 20px;
+            margin: 25px 0;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            font-size: 1.1em;
+        }
+
+        /* 功能按钮 */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .audio-btn {
+            background: #2196F3;
+            color: white;
+        }
+
+        .show-answer-btn {
+            background: #FF5722;
+            color: white;
+        }
+
+        .explanation-btn {
+            background: #009688;
+            color: white;
+        }
+
+        /* 底部导航 */
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        /* 统计面板 */
+        .stats-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 顶部菜单 -->
+    <div class="header">
+        <div class="menu">
+            <select id="unit-select" class="menu-item">
+                <option value="1">三年级上册第1单元</option>
+                <option value="2">三年级上册第2单元</option>
+                <option value="3">三年级上册第3单元</option>
+                <option value="4">四年级上册第1单元</option>
+                <option value="5">四年级上册第2单元</option>
+                <option value="6">四年级上册第3单元</option>
+                <option value="7">五年级上册第1单元</option>
+                <option value="8">五年级上册第2单元</option>
+                <option value="9">五年级上册第3单元</option>
+                <option value="10">六年级上册第1单元</option>
+                <option value="11">六年级上册第2单元</option>
+            </select>
+        </div>
+        <input type="text" class="search-box" placeholder="搜索学习单元">
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="progress-container">
+            <div class="timer">00:00:00</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div id="question-count">1/15</div>
+        </div>
+
+        <div class="question-box">
+            <div class="chinese-word" id="chinese-word">你</div>
+            <div class="underline"></div>
+            <input type="text" class="answer-input" id="answer-input" placeholder="输入英文翻译">
+
+            <div class="action-buttons">
+                <button class="action-btn submit-btn">提交</button>
+                <button class="action-btn audio-btn">播放发音</button>
+                <button class="action-btn show-answer-btn">显示答案</button>
+                <button class="action-btn explanation-btn">显示解释</button>
+            </div>
+        </div>
+
+        <!-- 导航按钮 -->
+        <div class="footer-nav">
+            <button class="nav-btn prev-btn">上一题</button>
+            <button class="nav-btn next-btn">下一题</button>
+        </div>
+    </div>
+
+    <!-- 统计面板 -->
+    <div class="stats-panel">
+        <h3>学习统计</h3>
+        <p>正确率: <span id="accuracy">0%</span></p>
+        <p>耗时: <span id="total-time">0分钟</span></p>
+        <p>得分: <span id="total-score">0</span></p>
+        <button onclick="document.querySelector('.stats-panel').style.display='none'">关闭</button>
+    </div>
+
+    <!-- 导入单元内容 -->
+    <script src="unit1_3rd_upper.js"></script>
+    <script src="unit2_3rd_upper.js"></script>
+    <script src="unit3_3rd_upper.js"></script>
+    <script src="unit1_4th_upper.js"></script>
+    <script src="unit2_4th_upper.js"></script>
+    <script src="unit3_4th_upper.js"></script>
+    <script src="unit1_5th_upper.js"></script>
+    <script src="unit2_5th_upper.js"></script>
+    <script src="unit3_5th_upper.js"></script>
+    <script src="unit1_6th_upper.js"></script>
+    <script src="unit2_6th_upper.js"></script>
+
+    <script>
+        const units = { 
+            1: unit1_3rd_upper, 
+            2: unit2_3rd_upper, 
+            3: unit3_3rd_upper, 
+            4: unit1_4th_upper, 
+            5: unit2_4th_upper, 
+            6: unit3_4th_upper, 
+            7: unit1_5th_upper, 
+            8: unit2_5th_upper, 
+            9: unit3_5th_upper, 
+            10: unit1_6th_upper, 
+            11: unit2_6th_upper 
+        };
+
+        // 状态管理变量
+        let currentUnit = 1;
+        let currentQuestionIndex = 0; // 改用索引代替编号
+        let correctAnswers = 0;
+        let startTime = Date.now();
+        let totalQuestions = 0;
+        let timerInterval;
+
+        // 初始化时获取总题数
+        function initUnit(unitId) {
+            currentUnit = unitId;
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            startTime = Date.now();
+            totalQuestions = units[unitId].questions.length;
+            loadQuestion();
+            startTimer();
+        }
+
+        function loadQuestion() {
+            const questions = units[currentUnit].questions;
+            const question = questions[currentQuestionIndex];
+            document.getElementById('chinese-word').textContent = question.chinese;
+            document.getElementById('answer-input').value = '';
+            updateProgress();
+            playAudio(question.audio); // 自动播放当前题目发音
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            document.querySelector('.progress-fill').style.width = `${progress}%`;
+            document.getElementById('question-count').textContent =
+                `${currentQuestionIndex + 1}/${totalQuestions}`;
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                const seconds = String(elapsed % 60).padStart(2, '0');
+                document.querySelector('.timer').textContent = `00:${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        document.querySelector('.submit-btn').addEventListener('click', () => {
+            const answer = document.getElementById('answer-input').value.trim().toLowerCase();
+            const currentQuestion = units[currentUnit].questions[currentQuestionIndex];
+            const correctAnswer = currentQuestion.english.toLowerCase();
+
+            if (answer === correctAnswer) {
+                correctAnswers++;
+                playAudio('audio/correct.mp3'); // 播放提示音
+
+                if (currentQuestionIndex < totalQuestions - 1) {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                } else {
+                    clearInterval(timerInterval);
+                    showStats();
+                }
+                updateProgress();
+            } else {
+                alert('答案错误，请再试一次。');
+            }
+        });
+
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const direction = btn.classList.contains('next-btn') ? 1 : -1;
+                const newIndex = currentQuestionIndex + direction;
+
+                if (newIndex >= 0 && newIndex < totalQuestions) {
+                    currentQuestionIndex = newIndex;
+                    loadQuestion();
+                }
+                updateProgress();
+            });
+        });
+
+        document.getElementById('unit-select').addEventListener('change', (e) => {
+            initUnit(parseInt(e.target.value));
+        });
+
+        document.querySelector('.audio-btn').addEventListener('click', () => {
+            const currentQuestion = units[currentUnit].questions[currentQuestionIndex];
+            playAudio(currentQuestion.audio);
+        });
+
+        document.querySelector('.show-answer-btn').addEventListener('click', () => {
+            const currentQuestion = units[currentUnit].questions[currentQuestionIndex];
+            alert(currentQuestion.english);
+        });
+
+        document.querySelector('.explanation-btn').addEventListener('click', () => {
+            const currentQuestion = units[currentUnit].questions[currentQuestionIndex];
+            alert(currentQuestion.explanation);
+        });
+
+        function showStats() {
+            const timeSpent = Math.floor((Date.now() - startTime) / 60000);
+            const accuracy = ((correctAnswers / totalQuestions) * 100).toFixed(1);
+            document.getElementById('total-time').textContent = `${timeSpent}分钟`;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+            document.getElementById('total-score').textContent = correctAnswers;
+            document.querySelector('.stats-panel').style.display = 'block';
+        }
+
+        function playAudio(audioPath) {
+            const audio = new Audio(audioPath);
+            audio.play();
+        }
+
+        // 初始化加载
+        initUnit(1);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+[
+    {
+        "type": "text",
+        "content": "Write the past tense of the verb 'go'.",
+        "correct": "Went"
+    },
+    {
+        "type": "radio",
+        "content": "What is 2 + 3?",
+        "options": ["4", "5", "6", "7"],
+        "correct": "5"
+    },
+    {
+        "type": "checkbox",
+        "content": "Which are types of desserts?",
+        "options": ["Ice cream", "Steak", "Cake", "Pasta"],
+        "correct": ["Ice cream", "Cake"]
+    },
+    {
+        "type": "text",
+        "content": "Write a word that describes something very fast.",
+        "correct": "Quick"
+    },
+    {
+        "type": "radio",
+        "content": "What is the largest animal on Earth?",
+        "options": ["Elephant", "Blue whale", "Giraffe", "Tiger"],
+        "correct": "Blue whale"
+    },
+    {
+        "type": "checkbox",
+        "content": "Which are modes of transportation?",
+        "options": ["Car", "Bicycle", "House", "Boat"],
+        "correct": ["Car", "Bicycle", "Boat"]
+    },
+    {
+        "type": "text",
+        "content": "How do you say 'goodbye' in English? (One word)",
+        "correct": "Goodbye"
+    },
+    {
+        "type": "radio",
+        "content": "What is 10 times 2?",
+        "options": ["12", "15", "20", "25"],
+        "correct": "20"
+    },
+    {
+        "type": "checkbox",
+        "content": "Which are cold drinks?",
+        "options": ["Tea (hot)", "Juice", "Soda", "Coffee (hot)"],
+        "correct": ["Juice", "Soda"]
+    },
+    {
+        "type": "text",
+        "content": "Write the opposite of 'wet'.",
+        "correct": "Dry"
+    },
+    {
+        "type": "radio",
+        "content": "What is the capital of Canada?",
+        "options": ["Ottawa", "Toronto", "Vancouver", "Montreal"],
+        "correct": "Ottawa"
+    },
+    {
+        "type": "checkbox",
+        "content": "Which are school subjects?",
+        "options": ["Math", "Basketball", "Science", "Lunch"],
+        "correct": ["Math", "Science"]
+    },
+    {
+        "type": "text",
+        "content": "Write a word that describes something very small.",
+        "correct": "Tiny"
+    },
+    {
+        "type": "radio",
+        "content": "What is 7 - 4?",
+        "options": ["2", "3", "4", "5"],
+        "correct": "3"
+    },
+    {
+        "type": "checkbox",
+        "content": "Which are wild animals?",
+        "options": ["Dog", "Lion", "Cat", "Mouse"],
+        "correct": ["Lion"]
+    },
+    {
+        "type": "text",
+        "content": "How do you say 'hello' in Spanish?",
+        "correct": "Hola"
+    },
+    {
+        "type": "radio",
+        "content": "What is the smallest planet in our solar system?",
+        "options": ["Earth", "Mercury", "Mars", "Venus"],
+        "correct": "Mercury"
+    },
+    {
+        "type": "checkbox",
+        "content": "Which are warm-weather clothes?",
+        "options": ["Sweater", "Shorts", "Coat", "T-shirt"],
+        "correct": ["Shorts", "T-shirt"]
+    },
+    {
+        "type": "text",
+        "content": "Write the plural form of 'child'.",
+        "correct": "Children"
+    },
+    {
+        "type": "radio",
+        "content": "What is 3 x 3?",
+        "options": ["6", "9", "12", "15"],
+        "correct": "9"
+    },
+    {
+        "type": "checkbox",
+        "content": "Which are parts of the human body?",
+        "options": ["Arm", "Tree", "Leg", "Nose"],
+        "correct": ["Arm", "Leg", "Nose"]
+    }
+]
