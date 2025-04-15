@@ -1,5 +1,5 @@
 const elementarySchoolWords = {
-    title: "小学必背单词",
+    name: "小学必背单词",
     questions: [{
             chinese: '直尺',
             english: 'ruler',

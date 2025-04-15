@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认字打地鼠</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#FF6B6B',secondary:'#4ECDC4'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        
+        @keyframes moleUp {
+            0% { transform: translateY(100%); }
+            10% { transform: translateY(0); }
+            80% { transform: translateY(0); }
+            100% { transform: translateY(100%); }
+        }
+        
+        @keyframes scoreUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-30px); opacity: 0; }
+        }
+        
+        @keyframes hitEffect {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .mole-animation {
+            animation: moleUp 2s ease-in-out;
+        }
+        
+        .score-animation {
+            animation: scoreUp 0.8s ease-out forwards;
+        }
+        
+        .hit-effect {
+            animation: hitEffect 0.5s ease-out forwards;
+        }
+        
+        .hole {
+        background: radial-gradient(circle at center, #65432a 0%, #3b2412 80%);
+        box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.5);
+        height: 7.5rem; /* 增大洞的大小 */
+    }
+        
+        .mole {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23a67c52"/><circle cx="35" cy="40" r="5" fill="%23000"/><circle cx="65" cy="40" r="5" fill="%23000"/><path d="M40 60 Q50 70 60 60" stroke="%23000" stroke-width="3" fill="none"/><ellipse cx="50" cy="30" rx="10" ry="5" fill="%23000"/></svg>');
+            background-size: 80% 80%; /* 缩小地鼠大小 */
+        background-position: center 60%; /* 调整地鼠位置 */
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .word-bubble {
+        top: -15px; /* 提升文字位置 */
+        z-index: 10; /* 确保文字在最上层 */
+        font-size: 1.2rem; /* 增大字体 */
+        padding: 4px 8px; /* 增加内边距 */
+        min-width: 50px; /* 增大最小宽度 */
+    }
+    /* 当地鼠开始下降时隐藏文字 */
+    .mole-container:not(.mole-animation) .word-bubble {
+        opacity: 0;
+    }
+    </style>
+</head>
+<body class="bg-gray-50 h-[762px] w-[375px] mx-auto relative overflow-hidden">
+    <!-- 顶部状态栏 -->
+    <div class="fixed top-0 w-full bg-white/90 backdrop-blur-sm shadow-sm z-20 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 flex items-center justify-center bg-primary/10 rounded-full">
+                <i class="ri-time-line text-primary"></i>
+            </div>
+            <div id="timer" class="text-lg font-bold">60</div>
+        </div>
+        
+        <div id="target-word" class="text-2xl font-bold flex items-center">
+            <span>学</span>
+            <button id="play-audio" class="ml-2 w-6 h-6 flex items-center justify-center">
+                <i class="ri-volume-up-line text-primary"></i>
+            </button>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 flex items-center justify-center bg-primary/10 rounded-full">
+                <i class="ri-award-line text-primary"></i>
+            </div>
+            <div id="score" class="text-lg font-bold">0</div>
+        </div>
+    </div>
+    
+    <!-- 难度指示器 -->
+    <div class="fixed top-16 w-full flex justify-center z-10 px-4 py-2">
+        <div class="bg-white/80 backdrop-blur-sm rounded-full px-4 py-1 shadow-sm flex items-center space-x-2">
+            <span id="difficulty-text" class="text-xs text-gray-700">初级</span>
+            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+        </div>
+    </div>
+    
+    <!-- 游戏区域 -->
+    <div class="pt-28 pb-20 px-2">
+        <div id="game-board" class="grid grid-cols-3 gap-3 w-full">
+            <!-- 地鼠洞将由JS动态生成 -->
+        </div>
+    </div>
+    
+    <!-- 底部控制栏 -->
+    <div class="fixed bottom-0 w-full bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.05)] flex justify-around items-center py-3 z-20">
+        <button id="restart-btn" class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full cursor-pointer">
+            <i class="ri-restart-line text-primary ri-lg"></i>
+        </button>
+        <button id="home-btn" class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full cursor-pointer">
+            <i class="ri-home-line text-primary ri-lg"></i>
+        </button>
+        <button id="settings-btn" class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full cursor-pointer">
+            <i class="ri-settings-line text-primary ri-lg"></i>
+        </button>
+        <button id="speed-btn" class="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full cursor-pointer">
+            <i class="ri-speed-line text-primary ri-lg"></i>
+        </button>
+    </div>
+    
+    <!-- 游戏开始界面 -->
+    <div id="start-screen" class="fixed inset-0 bg-white z-30 flex flex-col items-center justify-center">
+        <div class="font-['Pacifico'] text-4xl text-primary mb-8">logo</div>
+        <h1 class="text-2xl font-bold mb-8">认字打地鼠</h1>
+        
+        <div class="w-64 space-y-4 mb-8">
+            <button data-level="1" class="difficulty-btn w-full py-3 bg-primary text-white font-medium rounded-button shadow-md hover:bg-primary/90 transition cursor-pointer">
+                初级：基础汉字
+            </button>
+            <button data-level="2" class="difficulty-btn w-full py-3 bg-secondary text-white font-medium rounded-button shadow-md hover:bg-secondary/90 transition cursor-pointer">
+                中级：常用词语
+            </button>
+            <button data-level="3" class="difficulty-btn w-full py-3 bg-blue-500 text-white font-medium rounded-button shadow-md hover:bg-blue-500/90 transition cursor-pointer">
+                高级：成语
+            </button>
+            <button data-level="4" class="difficulty-btn w-full py-3 bg-purple-500 text-white font-medium rounded-button shadow-md hover:bg-purple-500/90 transition cursor-pointer">
+                进阶：成语组
+            </button>
+            <button data-level="5" class="difficulty-btn w-full py-3 bg-red-600 text-white font-medium rounded-button shadow-md hover:bg-red-600/90 transition cursor-pointer">
+                终极：生僻字
+            </button>
+        </div>
+        
+        <div class="text-sm text-gray-500">点击选择难度开始游戏</div>
+    </div>
+    
+    <!-- 游戏结算界面 -->
+    <div id="result-screen" class="fixed inset-0 bg-black/50 z-30 flex items-center justify-center hidden">
+        <div class="bg-white w-[300px] rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-center mb-4">游戏结束</h2>
+            
+            <div class="text-center mb-6">
+                <div class="text-4xl font-bold text-primary mb-2" id="final-score">0</div>
+                <div class="text-sm text-gray-500">最终得分</div>
+            </div>
+            
+            <div class="space-y-3 mb-6">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">用时</span>
+                    <span id="time-used" class="font-medium">60秒</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">正确率</span>
+                    <span id="accuracy" class="font-medium">0%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">难度</span>
+                    <span id="level-result" class="font-medium">初级</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">最高连击</span>
+                    <span id="max-combo" class="font-medium">0</span>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button id="play-again-btn" class="flex-1 py-2 bg-primary text-white font-medium rounded-button shadow-md hover:bg-primary/90 transition cursor-pointer">
+                    再玩一次
+                </button>
+                <button id="back-to-home-btn" class="flex-1 py-2 bg-gray-200 text-gray-700 font-medium rounded-button shadow-md hover:bg-gray-300 transition cursor-pointer">
+                    返回首页
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 设置面板 -->
+    <div id="settings-panel" class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center hidden">
+        <div class="bg-white w-[300px] rounded-xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">设置</h2>
+                <button id="close-settings" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">主题</h3>
+                    <div class="flex space-x-3">
+                        <button data-theme="light" class="theme-btn w-12 h-12 rounded-full bg-white border-2 border-primary flex items-center justify-center cursor-pointer">
+                            <i class="ri-sun-line text-primary"></i>
+                        </button>
+                        <button data-theme="dark" class="theme-btn w-12 h-12 rounded-full bg-gray-800 border-2 border-transparent flex items-center justify-center cursor-pointer">
+                            <i class="ri-moon-line text-white"></i>
+                        </button>
+                        <button data-theme="eye" class="theme-btn w-12 h-12 rounded-full bg-green-50 border-2 border-transparent flex items-center justify-center cursor-pointer">
+                            <i class="ri-eye-line text-green-600"></i>
+                        </button>
+                        <button data-theme="colorful" class="theme-btn w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 border-2 border-transparent flex items-center justify-center cursor-pointer">
+                            <i class="ri-palette-line text-white"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">音效</h3>
+                    <div class="flex items-center">
+                        <input id="sound-toggle" type="checkbox" checked class="hidden">
+                        <label for="sound-toggle" class="relative inline-block w-12 h-6 bg-gray-300 rounded-full cursor-pointer">
+                            <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 transform"></span>
+                        </label>
+                        <span class="ml-3 text-sm text-gray-600">开启音效</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">音量</h3>
+                    <input type="range" min="0" max="100" value="80" class="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 速度设置面板 -->
+    <div id="speed-panel" class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center hidden">
+        <div class="bg-white w-[300px] rounded-xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">速度设置</h2>
+                <button id="close-speed" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">地鼠出现速度</h3>
+                    <div class="flex space-x-3">
+                        <button data-speed="slow" class="speed-btn flex-1 py-3 bg-green-100 text-green-700 font-medium rounded-button flex items-center justify-center cursor-pointer">
+                            <i class="ri-speed-mini-line mr-2"></i>
+                            慢速
+                        </button>
+                        <button data-speed="normal" class="speed-btn flex-1 py-3 bg-primary/10 text-primary font-medium rounded-button flex items-center justify-center cursor-pointer">
+                            <i class="ri-speed-line mr-2"></i>
+                            中速
+                        </button>
+                        <button data-speed="fast" class="speed-btn flex-1 py-3 bg-red-100 text-red-700 font-medium rounded-button flex items-center justify-center cursor-pointer">
+                            <i class="ri-speed-up-line mr-2"></i>
+                            快速
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 游戏数据
+            const gameData = {
+                levels: {
+                    1: {
+                        name: "初级",
+                        words: ["学", "习", "天", "地", "人", "你", "我", "他", "好", "看", "听", "说", "读", "写", "走", "跑", "跳", "吃", "喝", "玩", "乐", "大", "小", "多", "少", "上", "下", "左", "右", "前", "后", "里", "外", "高", "低", "远", "近", "快", "慢", "早", "晚", "黑", "白", "红", "黄", "蓝", "绿"],
+                        time: 60,
+                        color: "bg-green-500"
+                    },
+                    2: {
+                        name: "中级",
+                        words: ["学习", "天地", "人民", "朋友", "老师", "学生", "父母", "兄弟", "姐妹", "家庭", "学校", "工作", "生活", "健康", "快乐", "幸福", "成功", "努力", "认真", "勤奋", "诚实", "友善", "尊重", "理解", "帮助", "支持", "鼓励", "关心", "爱护", "保护"],
+                        time: 50,
+                        color: "bg-secondary"
+                    },
+                    3: {
+                        name: "高级",
+                        words: ["一心一意", "万水千山", "三心二意", "四面八方", "五颜六色", "七上八下", "九牛一毛", "十全十美", "百发百中", "千变万化", "自由自在", "人山人海", "风花雪月", "春夏秋冬", "东西南北", "酸甜苦辣", "喜怒哀乐", "悲欢离合", "生老病死", "天长地久"],
+                        time: 45,
+                        color: "bg-blue-500"
+                    },
+                    4: {
+                        name: "进阶",
+                        words: ["一帆风顺", "万事如意", "三阳开泰", "四季平安", "五福临门", "六六大顺", "七星高照", "八方来财", "九九归一", "十年树木", "百年树人", "千军万马", "万众一心", "一日千里", "三十而立", "四海为家", "五湖四海", "六神无主", "七手八脚", "八面玲珑"],
+                        time: 40,
+                        color: "bg-purple-500"
+                    },
+                    5: {
+                        name: "终极",
+                        words: ["鬻", "龠", "躐", "鬣", "鬟", "鬈", "鬏", "鬓", "鬘", "鬚"],
+                        time: 30,
+                        color: "bg-red-600"
+                    }
+                },
+                currentLevel: 1,
+                score: 0,
+                timer: 60,
+                isPlaying: false,
+                correctHits: 0,
+                wrongHits: 0,
+                currentWord: "",
+                currentMoles: [],
+                moleInterval: null,
+                timerInterval: null,
+                speedSetting: "normal",
+                maxCombo: 0,
+                currentCombo: 0,
+                soundEnabled: true,
+                theme: "light"
+            };
+            
+            // DOM元素
+            const gameBoard = document.getElementById('game-board');
+            const timerEl = document.getElementById('timer');
+            const scoreEl = document.getElementById('score');
+            const targetWordEl = document.getElementById('target-word').querySelector('span');
+            const playAudioBtn = document.getElementById('play-audio');
+            const startScreen = document.getElementById('start-screen');
+            const resultScreen = document.getElementById('result-screen');
+            const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const homeBtn = document.getElementById('home-btn');
+            const settingsBtn = document.getElementById('settings-btn');
+            const speedBtn = document.getElementById('speed-btn');
+            const playAgainBtn = document.getElementById('play-again-btn');
+            const backToHomeBtn = document.getElementById('back-to-home-btn');
+            const finalScoreEl = document.getElementById('final-score');
+            const timeUsedEl = document.getElementById('time-used');
+            const accuracyEl = document.getElementById('accuracy');
+            const levelResultEl = document.getElementById('level-result');
+            const maxComboEl = document.getElementById('max-combo');
+            const difficultyTextEl = document.getElementById('difficulty-text');
+            const settingsPanel = document.getElementById('settings-panel');
+            const closeSettingsBtn = document.getElementById('close-settings');
+            const speedPanel = document.getElementById('speed-panel');
+            const closeSpeedBtn = document.getElementById('close-speed');
+            const themeBtns = document.querySelectorAll('.theme-btn');
+            const speedBtns = document.querySelectorAll('.speed-btn');
+            const soundToggle = document.getElementById('sound-toggle');
+            
+            // 音频元素
+            const correctSound = new Audio();
+            correctSound.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAAbAAkJCQkJCQkJCQkJCQkJCQwMDAwMDAwMDAwMDAwMDA4ODg4ODg4ODg4ODg4ODg4P//////////////////AAAAOkxhdmM1OC4xMzQAAAAAAAAAAAAASW5mbwAAAA8AAAADAABssAD///////////////////////////////////////////////////////////////////8AAAA6TEF2YzU4LjEzNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/jOMAAAAAAAAAAAABJbmZvAAAADwAAAAMAAAGwAJCQkJCQkJCQkJCQkJCQkMDAwMDAwMDAwMDAwMDAwODg4ODg4ODg4ODg4ODg4OD//////////////////wAAAABMYXZjNTguMTM0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxDsAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxHYAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxLEAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
+            
+            const wrongSound = new Audio();
+            wrongSound.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAAbAAkJCQkJCQkJCQkJCQkJCQwMDAwMDAwMDAwMDAwMDA4ODg4ODg4ODg4ODg4ODg4P//////////////////AAAAOkxhdmM1OC4xMzQAAAAAAAAAAAAASW5mbwAAAA8AAAADAABssAD///////////////////////////////////////////////////////////////////8AAAA6TEF2YzU4LjEzNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/jOMAAAAAAAAAAAABJbmZvAAAADwAAAAMAAAGwAJCQkJCQkJCQkJCQkJCQkMDAwMDAwMDAwMDAwMDAwODg4ODg4ODg4ODg4ODg4OD//////////////////wAAAABMYXZjNTguMTM0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxDsAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxHYAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxLEAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
+            
+            // 创建地鼠洞
+            function createHoles() {
+                gameBoard.innerHTML = '';
+        for (let i = 0; i < 12; i++) {
+            const hole = document.createElement('div');
+            hole.className = 'hole relative rounded-full aspect-square flex items-center justify-center overflow-hidden';
+            hole.dataset.index = i;
+                    
+                    // 创建地鼠容器（调整高度比例）
+            const moleContainer = document.createElement('div');
+            moleContainer.className = 'mole-container absolute bottom-0 w-full h-3/4 translate-y-full'; /* 修改为3/4高度 */
+                    
+                    // 创建地鼠
+                    const mole = document.createElement('div');
+                    mole.className = 'mole relative w-full h-full cursor-pointer';
+                    
+                    // 创建文字气泡
+                    const bubble = document.createElement('div');
+                    bubble.className = 'word-bubble absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-full px-3 py-1 text-center shadow-md min-w-[40px]';
+                    bubble.innerHTML = '<span class="text-sm font-medium"></span>';
+                    
+                    mole.appendChild(bubble);
+                    moleContainer.appendChild(mole);
+                    hole.appendChild(moleContainer);
+                    gameBoard.appendChild(hole);
+                    
+                    // 添加点击事件
+                    mole.addEventListener('click', handleMoleClick);
+                }
+            }
+            
+            // 开始游戏
+            function startGame(level) {
+                gameData.currentLevel = level;
+                gameData.score = 0;
+                gameData.timer = gameData.levels[level].time;
+                gameData.correctHits = 0;
+                gameData.wrongHits = 0;
+                gameData.maxCombo = 0;
+                gameData.currentCombo = 0;
+                gameData.isPlaying = true;
+                gameData.currentMoles = [];
+                
+                // 更新UI
+                scoreEl.textContent = '0';
+                timerEl.textContent = gameData.timer;
+                difficultyTextEl.textContent = gameData.levels[level].name;
+                document.querySelector('#difficulty-text').nextElementSibling.className = `w-2 h-2 rounded-full ${gameData.levels[level].color}`;
+                
+                // 隐藏开始界面
+                startScreen.classList.add('hidden');
+                
+                // 开始倒计时
+                startTimer();
+                
+                // 开始出现地鼠
+                startMoles();
+            }
+            
+            // 倒计时
+            function startTimer() {
+                clearInterval(gameData.timerInterval);
+                gameData.timerInterval = setInterval(() => {
+                    gameData.timer--;
+                    timerEl.textContent = gameData.timer;
+                    
+                    if (gameData.timer <= 0) {
+                        endGame();
+                    }
+                }, 1000);
+            }
+            
+            // 地鼠出现
+            function startMoles() {
+                clearInterval(gameData.moleInterval);
+                
+                // 设置地鼠出现的间隔时间
+                let interval;
+                switch(gameData.speedSetting) {
+                    case 'slow':
+                        interval = 2500;
+                        break;
+                    case 'fast':
+                        interval = 1500;
+                        break;
+                    default:
+                        interval = 2000;
+                }
+                
+                // 先出现一批地鼠
+                showRandomMoles();
+                
+                // 定时出现新地鼠
+                gameData.moleInterval = setInterval(showRandomMoles, interval);
+            }
+            
+            // 随机显示地鼠
+            function showRandomMoles() {
+                if (!gameData.isPlaying) return;
+                
+                // 先隐藏所有当前的地鼠
+                gameData.currentMoles.forEach(index => {
+                    const moleContainer = document.querySelectorAll('.mole-container')[index];
+                    moleContainer.classList.remove('mole-animation');
+                    moleContainer.style.transform = 'translateY(100%)';
+                });
+                
+                // 清空当前地鼠数组
+                gameData.currentMoles = [];
+                
+                // 随机选择目标字
+                const words = gameData.levels[gameData.currentLevel].words;
+                gameData.currentWord = words[Math.floor(Math.random() * words.length)];
+                targetWordEl.textContent = gameData.currentWord;
+                
+                // 播放音频
+                if (gameData.soundEnabled) {
+                    playWordAudio();
+                }
+                
+                // 随机选择2-4个洞
+                const holeCount = 12;
+                const moleCount = Math.floor(Math.random() * 3) + 2; // 2-4只地鼠
+                
+                const availableHoles = Array.from({length: holeCount}, (_, i) => i);
+                const selectedHoles = [];
+                
+                for (let i = 0; i < moleCount; i++) {
+                    const randomIndex = Math.floor(Math.random() * availableHoles.length);
+                    const holeIndex = availableHoles.splice(randomIndex, 1)[0];
+                    selectedHoles.push(holeIndex);
+                }
+                
+                // 随机选择一个地鼠显示正确的字
+                const correctMoleIndex = Math.floor(Math.random() * selectedHoles.length);
+                
+                // 显示地鼠
+                selectedHoles.forEach((holeIndex, i) => {
+                    const moleContainer = document.querySelectorAll('.mole-container')[holeIndex];
+                    const wordBubble = moleContainer.querySelector('.word-bubble span');
+                    
+                    // 设置文字
+                    if (i === correctMoleIndex) {
+                        wordBubble.textContent = gameData.currentWord;
+                        moleContainer.dataset.correct = 'true';
+                    } else {
+                        // 随机选择一个不同的字
+                        let randomWord;
+                        do {
+                            randomWord = words[Math.floor(Math.random() * words.length)];
+                        } while (randomWord === gameData.currentWord);
+                        
+                        wordBubble.textContent = randomWord;
+                        moleContainer.dataset.correct = 'false';
+                    }
+                    
+                    // 显示地鼠
+                    moleContainer.classList.add('mole-animation');
+                    moleContainer.style.transform = 'translateY(0)';
+                    
+                    // 记录当前显示的地鼠
+                    gameData.currentMoles.push(holeIndex);
+                });
+            }
+            
+            // 处理地鼠点击
+            function handleMoleClick(e) {
+                if (!gameData.isPlaying) return;
+                
+                const moleContainer = e.currentTarget.closest('.mole-container');
+                const isCorrect = moleContainer.dataset.correct === 'true';
+                
+                // 创建点击特效
+                createHitEffect(e);
+                
+                if (isCorrect) {
+                    // 正确击中
+                    gameData.score += 100;
+                    gameData.correctHits++;
+                    gameData.currentCombo++;
+                    
+                    // 更新最大连击
+                    if (gameData.currentCombo > gameData.maxCombo) {
+                        gameData.maxCombo = gameData.currentCombo;
+                    }
+                    
+                    // 播放正确音效
+                    if (gameData.soundEnabled) {
+                        correctSound.currentTime = 0;
+                        correctSound.play();
+                    }
+                    
+                    // 显示得分动画
+                    showScoreAnimation(e.clientX, e.clientY, '+100', 'text-green-500');
+                    
+                    // 立即显示新的地鼠
+                    setTimeout(showRandomMoles, 300);
+                } else {
+                    // 错误击中
+                    gameData.score = Math.max(0, gameData.score - 50);
+                    gameData.wrongHits++;
+                    gameData.currentCombo = 0;
+                    
+                    // 播放错误音效
+                    if (gameData.soundEnabled) {
+                        wrongSound.currentTime = 0;
+                        wrongSound.play();
+                    }
+                    
+                    // 显示扣分动画
+                    showScoreAnimation(e.clientX, e.clientY, '-50', 'text-red-500');
+                }
+                
+                // 更新分数
+                scoreEl.textContent = gameData.score;
+                
+                // 隐藏被点击的地鼠
+                moleContainer.classList.remove('mole-animation');
+                moleContainer.style.transform = 'translateY(100%)';
+            }
+            
+            // 创建击打特效
+            function createHitEffect(e) {
+                const effect = document.createElement('div');
+                effect.className = 'hit-effect absolute rounded-full pointer-events-none';
+                effect.style.width = '50px';
+                effect.style.height = '50px';
+                effect.style.left = (e.clientX - 25) + 'px';
+                effect.style.top = (e.clientY - 25) + 'px';
+                effect.style.background = 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%)';
+                
+                document.body.appendChild(effect);
+                
+                // 创建粒子特效
+                createParticles(e.clientX, e.clientY);
+                
+                // 移除特效元素
+                setTimeout(() => {
+                    effect.remove();
+                }, 500);
+            }
+            
+            // 创建粒子特效
+            function createParticles(x, y) {
+                const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#118AB2'];
+                
+                for (let i = 0; i < 20; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'confetti';
+                    
+                    // 随机颜色
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.backgroundColor = color;
+                    
+                    // 随机大小
+                    const size = Math.random() * 8 + 4;
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    
+                    // 初始位置
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    
+                    document.body.appendChild(particle);
+                    
+                    // 随机角度和距离
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * 80 + 20;
+                    const destinationX = x + Math.cos(angle) * distance;
+                    const destinationY = y + Math.sin(angle) * distance;
+                    
+                    // 动画
+                    const animation = particle.animate([
+                        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                        { transform: `translate(${destinationX - x}px, ${destinationY - y}px) scale(0)`, opacity: 0 }
+                    ], {
+                        duration: Math.random() * 600 + 400,
+                        easing: 'cubic-bezier(0, .9, .57, 1)'
+                    });
+                    
+                    animation.onfinish = () => particle.remove();
+                }
+            }
+            
+            // 显示分数动画
+            function showScoreAnimation(x, y, text, colorClass) {
+                const scoreAnim = document.createElement('div');
+                scoreAnim.className = `score-animation absolute pointer-events-none ${colorClass} font-bold`;
+                scoreAnim.style.left = (x - 20) + 'px';
+                scoreAnim.style.top = (y - 30) + 'px';
+                scoreAnim.textContent = text;
+                
+                document.body.appendChild(scoreAnim);
+                
+                // 移除动画元素
+                setTimeout(() => {
+                    scoreAnim.remove();
+                }, 800);
+            }
+            
+            // 播放字的音频
+            function playWordAudio() {
+                // 模拟音频播放
+                console.log(`播放音频: ${gameData.currentWord}.mp3`);
+                // 实际项目中应该使用：
+                // const audio = new Audio(`audio/${gameData.currentWord}.mp3`);
+                // audio.play();
+            }
+            
+            // 结束游戏
+            function endGame() {
+                gameData.isPlaying = false;
+                clearInterval(gameData.timerInterval);
+                clearInterval(gameData.moleInterval);
+                
+                // 隐藏所有地鼠
+                document.querySelectorAll('.mole-container').forEach(mole => {
+                    mole.classList.remove('mole-animation');
+                    mole.style.transform = 'translateY(100%)';
+                });
+                
+                // 更新结算界面
+                finalScoreEl.textContent = gameData.score;
+                timeUsedEl.textContent = gameData.levels[gameData.currentLevel].time - gameData.timer + '秒';
+                
+                const totalHits = gameData.correctHits + gameData.wrongHits;
+                const accuracy = totalHits > 0 ? Math.round((gameData.correctHits / totalHits) * 100) : 0;
+                accuracyEl.textContent = accuracy + '%';
+                
+                levelResultEl.textContent = gameData.levels[gameData.currentLevel].name;
+                maxComboEl.textContent = gameData.maxCombo;
+                
+                // 显示结算界面
+                resultScreen.classList.remove('hidden');
+            }
+            
+            // 应用主题
+            function applyTheme(theme) {
+                const body = document.body;
+                body.className = '';
+                
+                switch(theme) {
+                    case 'dark':
+                        body.classList.add('bg-gray-900', 'text-white');
+                        document.querySelectorAll('.bg-white').forEach(el => {
+                            el.classList.remove('bg-white');
+                            el.classList.add('bg-gray-800');
+                        });
+                        document.querySelectorAll('.bg-white\\/90').forEach(el => {
+                            el.classList.remove('bg-white/90');
+                            el.classList.add('bg-gray-800/90');
+                        });
+                        document.querySelectorAll('.bg-white\\/80').forEach(el => {
+                            el.classList.remove('bg-white/80');
+                            el.classList.add('bg-gray-800/80');
+                        });
+                        document.querySelectorAll('.text-gray-500, .text-gray-600, .text-gray-700').forEach(el => {
+                            el.classList.remove('text-gray-500', 'text-gray-600', 'text-gray-700');
+                            el.classList.add('text-gray-400');
+                        });
+                        break;
+                    case 'eye':
+                        body.classList.add('bg-green-50', 'text-gray-800');
+                        document.querySelectorAll('.bg-white').forEach(el => {
+                            el.classList.remove('bg-white');
+                            el.classList.add('bg-green-100');
+                        });
+                        document.querySelectorAll('.bg-white\\/90').forEach(el => {
+                            el.classList.remove('bg-white/90');
+                            el.classList.add('bg-green-100/90');
+                        });
+                        document.querySelectorAll('.bg-white\\/80').forEach(el => {
+                            el.classList.remove('bg-white/80');
+                            el.classList.add('bg-green-100/80');
+                        });
+                        break;
+                    case 'colorful':
+                        body.classList.add('bg-gradient-to-br', 'from-blue-100', 'to-purple-100', 'text-gray-800');
+                        document.querySelectorAll('.bg-white').forEach(el => {
+                            el.classList.remove('bg-white');
+                            el.classList.add('bg-white/80', 'backdrop-blur-sm');
+                        });
+                        document.querySelectorAll('.bg-white\\/90').forEach(el => {
+                            el.classList.remove('bg-white/90');
+                            el.classList.add('bg-white/70', 'backdrop-blur-sm');
+                        });
+                        document.querySelectorAll('.bg-white\\/80').forEach(el => {
+                            el.classList.remove('bg-white/80');
+                            el.classList.add('bg-white/60', 'backdrop-blur-sm');
+                        });
+                        break;
+                    default: // light
+                        body.classList.add('bg-gray-50', 'text-gray-900');
+                        document.querySelectorAll('.bg-gray-800').forEach(el => {
+                            el.classList.remove('bg-gray-800');
+                            el.classList.add('bg-white');
+                        });
+                        document.querySelectorAll('.bg-gray-800\\/90').forEach(el => {
+                            el.classList.remove('bg-gray-800/90');
+                            el.classList.add('bg-white/90');
+                        });
+                        document.querySelectorAll('.bg-gray-800\\/80').forEach(el => {
+                            el.classList.remove('bg-gray-800/80');
+                            el.classList.add('bg-white/80');
+                        });
+                        document.querySelectorAll('.text-gray-400').forEach(el => {
+                            el.classList.remove('text-gray-400');
+                            el.classList.add('text-gray-600');
+                        });
+                        break;
+                }
+                
+                gameData.theme = theme;
+            }
+            
+            // 事件监听
+            difficultyBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const level = parseInt(btn.dataset.level);
+                    createHoles();
+                    startGame(level);
+                });
+            });
+            
+            restartBtn.addEventListener('click', () => {
+                createHoles();
+                startGame(gameData.currentLevel);
+            });
+            
+            homeBtn.addEventListener('click', () => {
+                clearInterval(gameData.timerInterval);
+                clearInterval(gameData.moleInterval);
+                gameData.isPlaying = false;
+                startScreen.classList.remove('hidden');
+                resultScreen.classList.add('hidden');
+            });
+            
+            settingsBtn.addEventListener('click', () => {
+                settingsPanel.classList.remove('hidden');
+            });
+            
+            closeSettingsBtn.addEventListener('click', () => {
+                settingsPanel.classList.add('hidden');
+            });
+            
+            speedBtn.addEventListener('click', () => {
+                speedPanel.classList.remove('hidden');
+            });
+            
+            closeSpeedBtn.addEventListener('click', () => {
+                speedPanel.classList.add('hidden');
+            });
+            
+            playAgainBtn.addEventListener('click', () => {
+                resultScreen.classList.add('hidden');
+                createHoles();
+                startGame(gameData.currentLevel);
+            });
+            
+            backToHomeBtn.addEventListener('click', () => {
+                resultScreen.classList.add('hidden');
+                startScreen.classList.remove('hidden');
+            });
+            
+            playAudioBtn.addEventListener('click', () => {
+                if (gameData.isPlaying && gameData.soundEnabled) {
+                    playWordAudio();
+                }
+            });
+            
+            themeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const theme = btn.dataset.theme;
+                    applyTheme(theme);
+                    
+                    // 更新按钮样式
+                    themeBtns.forEach(b => b.classList.remove('border-primary'));
+                    btn.classList.add('border-primary');
+                });
+            });
+            
+            speedBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const speed = btn.dataset.speed;
+                    gameData.speedSetting = speed;
+                    
+                    // 更新按钮样式
+                    speedBtns.forEach(b => {
+                        b.classList.remove('bg-primary/10', 'text-primary');
+                        b.classList.add('bg-gray-100', 'text-gray-700');
+                    });
+                    btn.classList.remove('bg-gray-100', 'text-gray-700');
+                    
+                    if (speed === 'slow') {
+                        btn.classList.add('bg-green-100', 'text-green-700');
+                    } else if (speed === 'fast') {
+                        btn.classList.add('bg-red-100', 'text-red-700');
+                    } else {
+                        btn.classList.add('bg-primary/10', 'text-primary');
+                    }
+                    
+                    // 如果游戏正在进行，重新开始地鼠出现
+                    if (gameData.isPlaying) {
+                        startMoles();
+                    }
+                });
+            });
+            
+            soundToggle.addEventListener('change', () => {
+                gameData.soundEnabled = soundToggle.checked;
+                
+                // 更新开关样式
+                const toggleSpan = soundToggle.nextElementSibling.querySelector('span');
+                if (soundToggle.checked) {
+                    toggleSpan.classList.add('translate-x-6');
+                    soundToggle.nextElementSibling.classList.remove('bg-gray-300');
+                    soundToggle.nextElementSibling.classList.add('bg-primary');
+                } else {
+                    toggleSpan.classList.remove('translate-x-6');
+                    soundToggle.nextElementSibling.classList.remove('bg-primary');
+                    soundToggle.nextElementSibling.classList.add('bg-gray-300');
+                }
+            });
+            
+            // 初始化
+            document.addEventListener('click', function(e) {
+                if (soundToggle.checked) {
+                    const toggleSpan = soundToggle.nextElementSibling.querySelector('span');
+                    toggleSpan.classList.add('translate-x-6');
+                    soundToggle.nextElementSibling.classList.remove('bg-gray-300');
+                    soundToggle.nextElementSibling.classList.add('bg-primary');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

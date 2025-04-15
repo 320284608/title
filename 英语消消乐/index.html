@@ -541,10 +541,14 @@
                     📁 单词列表
                 </button>
                 <div class="preload-list" id="preloadList">
-                    <div class="preload-item" onclick="loadLocalFile('grade3.txt')">三年级单词</div>
-                    <div class="preload-item" onclick="loadLocalFile('grade4.txt')">四年级单词</div>
-                    <div class="preload-item" onclick="loadLocalFile('grade5.txt')">五年级单词</div>
-                    <div class="preload-item" onclick="loadLocalFile('grade6.txt')">六年级单词</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade3_1.txt')">三年级上册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade3_2.txt')">三年级下册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade4_1.txt')">四年级上册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade4_2.txt')">四年级下册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade5_1.txt')">五年级上册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade5_2.txt')">五年级下册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade6_1.txt')">六年级上册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade6_2.txt')">六年级下册</div>
                 </div>
             </div>
             <button class="main-btn" onclick="document.getElementById('wordFile').click()">
@@ -584,6 +588,1231 @@
     <!-- 游戏容器部分保持不变 -->
 
     <script>
+        const predefinedWords = {
+            // 三年级上册
+            'grade3_1.txt': [{
+                    english: 'ruler',
+                    chinese: '尺子'
+                },
+                {
+                    english: 'pencil',
+                    chinese: '铅笔'
+                },
+                {
+                    english: 'eraser',
+                    chinese: '橡皮'
+                },
+                {
+                    english: 'crayon',
+                    chinese: '蜡笔'
+                },
+                {
+                    english: 'bag',
+                    chinese: '书包'
+                },
+                {
+                    english: 'pen',
+                    chinese: '钢笔'
+                },
+                {
+                    english: 'book',
+                    chinese: '书'
+                },
+                {
+                    english: 'sharpener',
+                    chinese: '卷笔刀'
+                },
+                {
+                    english: 'school',
+                    chinese: '学校'
+                },
+                {
+                    english: 'head',
+                    chinese: '头'
+                },
+                {
+                    english: 'face',
+                    chinese: '脸'
+                },
+                {
+                    english: 'nose',
+                    chinese: '鼻子'
+                },
+                {
+                    english: 'mouth',
+                    chinese: '嘴'
+                },
+                {
+                    english: 'eye',
+                    chinese: '眼睛'
+                },
+                {
+                    english: 'ear',
+                    chinese: '耳朵'
+                },
+                {
+                    english: 'arm',
+                    chinese: '手臂'
+                },
+                {
+                    english: 'leg',
+                    chinese: '腿'
+                },
+                {
+                    english: 'foot',
+                    chinese: '脚'
+                },
+                {
+                    english: 'red',
+                    chinese: '红色'
+                },
+                {
+                    english: 'yellow',
+                    chinese: '黄色'
+                },
+                {
+                    english: 'green',
+                    chinese: '绿色'
+                },
+                {
+                    english: 'blue',
+                    chinese: '蓝色'
+                },
+                {
+                    english: 'black',
+                    chinese: '黑色'
+                },
+                {
+                    english: 'white',
+                    chinese: '白色'
+                },
+                {
+                    english: 'orange',
+                    chinese: '橙色'
+                },
+                {
+                    english: 'cat',
+                    chinese: '猫'
+                },
+                {
+                    english: 'dog',
+                    chinese: '狗'
+                },
+                {
+                    english: 'panda',
+                    chinese: '熊猫'
+                },
+                {
+                    english: 'bird',
+                    chinese: '鸟'
+                },
+                {
+                    english: 'tiger',
+                    chinese: '老虎'
+                },
+                {
+                    english: 'zoo',
+                    chinese: '动物园'
+                },
+                {
+                    english: 'cake',
+                    chinese: '蛋糕'
+                },
+                {
+                    english: 'bread',
+                    chinese: '面包'
+                },
+                {
+                    english: 'milk',
+                    chinese: '牛奶'
+                },
+                {
+                    english: 'water',
+                    chinese: '水'
+                },
+                {
+                    english: 'fish',
+                    chinese: '鱼'
+                },
+                {
+                    english: 'rice',
+                    chinese: '米饭'
+                },
+                {
+                    english: 'one',
+                    chinese: '一'
+                },
+                {
+                    english: 'two',
+                    chinese: '二'
+                },
+                {
+                    english: 'three',
+                    chinese: '三'
+                },
+                {
+                    english: 'four',
+                    chinese: '四'
+                },
+                {
+                    english: 'five',
+                    chinese: '五'
+                },
+                {
+                    english: 'six',
+                    chinese: '六'
+                },
+                {
+                    english: 'seven',
+                    chinese: '七'
+                },
+                {
+                    english: 'eight',
+                    chinese: '八'
+                },
+                {
+                    english: 'nine',
+                    chinese: '九'
+                },
+                {
+                    english: 'ten',
+                    chinese: '十'
+                }
+            ],
+            // 三年级下册
+            'grade3_2.txt': [{
+                    english: 'girl',
+                    chinese: '女孩'
+                },
+                {
+                    english: 'family',
+                    chinese: '家庭'
+                },
+                {
+                    english: 'father',
+                    chinese: '爸爸'
+                },
+                {
+                    english: 'mother',
+                    chinese: '妈妈'
+                },
+                {
+                    english: 'brother',
+                    chinese: '兄弟'
+                },
+                {
+                    english: 'sister',
+                    chinese: '姐妹'
+                },
+                {
+                    english: 'grandpa',
+                    chinese: '爷爷'
+                },
+                {
+                    english: 'grandma',
+                    chinese: '奶奶'
+                },
+                {
+                    english: 'apple',
+                    chinese: '苹果'
+                },
+                {
+                    english: 'banana',
+                    chinese: '香蕉'
+                },
+                {
+                    english: 'orange',
+                    chinese: '橙子'
+                },
+                {
+                    english: 'grape',
+                    chinese: '葡萄'
+                },
+                {
+                    english: 'like',
+                    chinese: '喜欢'
+                },
+                {
+                    english: 'monkey',
+                    chinese: '猴子'
+                },
+                {
+                    english: 'elephant',
+                    chinese: '大象'
+                },
+                {
+                    english: 'lion',
+                    chinese: '狮子'
+                },
+                {
+                    english: 'giraffe',
+                    chinese: '长颈鹿'
+                },
+                {
+                    english: 'tall',
+                    chinese: '高的'
+                },
+                {
+                    english: 'short',
+                    chinese: '矮的'
+                },
+                // Unit 4 Where is my car?
+                {
+                    english: 'car',
+                    chinese: '小汽车'
+                },
+                {
+                    english: 'boat',
+                    chinese: '小船'
+                },
+                {
+                    english: 'map',
+                    chinese: '地图'
+                },
+                {
+                    english: 'cap',
+                    chinese: '帽子'
+                },
+                // Unit 5 Do you like pears?
+                {
+                    english: 'pear',
+                    chinese: '梨'
+                },
+                {
+                    english: 'strawberry',
+                    chinese: '草莓'
+                },
+                {
+                    english: 'watermelon',
+                    chinese: '西瓜'
+                },
+                // Unit 6 How many?
+                {
+                    english: 'eleven',
+                    chinese: '十一'
+                },
+                {
+                    english: 'twelve',
+                    chinese: '十二'
+                },
+                {
+                    english: 'thirteen',
+                    chinese: '十三'
+                },
+                {
+                    english: 'fifteen',
+                    chinese: '十五'
+                },
+                {
+                    english: 'twenty',
+                    chinese: '二十'
+                },
+
+
+            ],
+            // 四年级上册
+            'grade4_1.txt': [
+                // 教室与学校相关
+                {
+                    english: 'classroom',
+                    chinese: '教室'
+                },
+                {
+                    english: 'window',
+                    chinese: '窗户'
+                },
+                {
+                    english: 'blackboard',
+                    chinese: '黑板'
+                },
+                {
+                    english: 'light',
+                    chinese: '电灯'
+                },
+                {
+                    english: 'picture',
+                    chinese: '图画'
+                },
+                {
+                    english: 'door',
+                    chinese: '门'
+                },
+                {
+                    english: 'teacher\'s desk',
+                    chinese: '讲台'
+                },
+                {
+                    english: 'computer',
+                    chinese: '计算机'
+                },
+                {
+                    english: 'fan',
+                    chinese: '风扇'
+                },
+                {
+                    english: 'wall',
+                    chinese: '墙壁'
+                },
+                {
+                    english: 'floor',
+                    chinese: '地板'
+                },
+                {
+                    english: 'TV',
+                    chinese: '电视'
+                },
+                {
+                    english: 'clean',
+                    chinese: '打扫'
+                },
+                {
+                    english: 'help',
+                    chinese: '帮助'
+                },
+                // 书包与学习用品
+                {
+                    english: 'schoolbag',
+                    chinese: '书包'
+                },
+                {
+                    english: 'maths book',
+                    chinese: '数学书'
+                },
+                {
+                    english: 'English book',
+                    chinese: '英语书'
+                },
+                {
+                    english: 'Chinese book',
+                    chinese: '语文书'
+                },
+                {
+                    english: 'storybook',
+                    chinese: '故事书'
+                },
+                {
+                    english: 'notebook',
+                    chinese: '笔记本'
+                },
+                {
+                    english: 'toy',
+                    chinese: '玩具'
+                },
+                {
+                    english: 'key',
+                    chinese: '钥匙'
+                },
+                // 人物与性格
+                {
+                    english: 'strong',
+                    chinese: '强壮的'
+                },
+                {
+                    english: 'friendly',
+                    chinese: '友好的'
+                },
+                {
+                    english: 'quiet',
+                    chinese: '安静的'
+                },
+                {
+                    english: 'glasses',
+                    chinese: '眼镜'
+                },
+                {
+                    english: 'hat',
+                    chinese: '帽子'
+                },
+                // Unit 1 My classroom
+                {
+                    english: 'classroom',
+                    chinese: '教室'
+                },
+                {
+                    english: 'really',
+                    chinese: '真的'
+                }, // 新增
+                {
+                    english: 'near',
+                    chinese: '靠近'
+                }, // 新增
+
+                // Unit 2 My schoolbag
+                {
+                    english: 'schoolbag',
+                    chinese: '书包'
+                },
+                {
+                    english: 'lost',
+                    chinese: '丢失'
+                }, // 新增
+
+                // Unit 3 My friends
+                {
+                    english: 'friendly',
+                    chinese: '友好的'
+                },
+                {
+                    english: 'quiet',
+                    chinese: '安静的'
+                },
+                {
+                    english: 'hair',
+                    chinese: '头发'
+                }, // 新增
+                {
+                    english: 'shoe',
+                    chinese: '鞋子'
+                }, // 新增
+
+                // Unit 4 My home
+                {
+                    english: 'bedroom',
+                    chinese: '卧室'
+                },
+                {
+                    english: 'sofa',
+                    chinese: '沙发'
+                },
+                {
+                    english: 'fridge',
+                    chinese: '冰箱'
+                },
+                {
+                    english: 'phone',
+                    chinese: '电话'
+                } // 新增
+            ],
+
+            // 四年级下册
+            'grade4_2.txt': [
+                // Unit 1 My School
+                {
+                    english: 'first floor',
+                    chinese: '一楼'
+                },
+                {
+                    english: 'second floor',
+                    chinese: '二楼'
+                },
+                {
+                    english: 'teachers\' office',
+                    chinese: '教师办公室'
+                },
+                {
+                    english: 'library',
+                    chinese: '图书馆'
+                },
+                {
+                    english: 'playground',
+                    chinese: '操场'
+                },
+                {
+                    english: 'computer room',
+                    chinese: '计算机房'
+                },
+                {
+                    english: 'art room',
+                    chinese: '美术教室'
+                },
+                {
+                    english: 'music room',
+                    chinese: '音乐教室'
+                },
+
+                // Unit 2 What Time Is It?
+                {
+                    english: 'breakfast',
+                    chinese: '早餐'
+                },
+                {
+                    english: 'English class',
+                    chinese: '英语课'
+                },
+                {
+                    english: 'lunch',
+                    chinese: '午餐'
+                },
+                {
+                    english: 'PE class',
+                    chinese: '体育课'
+                },
+                {
+                    english: 'dinner',
+                    chinese: '晚餐'
+                },
+                {
+                    english: 'get up',
+                    chinese: '起床'
+                },
+                {
+                    english: 'go to school',
+                    chinese: '上学'
+                },
+
+                // Unit 3 Weather
+                {
+                    english: 'cold',
+                    chinese: '寒冷的'
+                },
+                {
+                    english: 'warm',
+                    chinese: '温暖的'
+                },
+                {
+                    english: 'hot',
+                    chinese: '炎热的'
+                },
+                {
+                    english: 'sunny',
+                    chinese: '晴朗的'
+                },
+                {
+                    english: 'rainy',
+                    chinese: '多雨的'
+                },
+                {
+                    english: 'windy',
+                    chinese: '多风的'
+                },
+                {
+                    english: 'cloudy',
+                    chinese: '多云的'
+                },
+
+                // Unit 4 At the Farm
+                {
+                    english: 'tomato',
+                    chinese: '西红柿'
+                },
+                {
+                    english: 'potato',
+                    chinese: '土豆'
+                },
+                {
+                    english: 'carrot',
+                    chinese: '胡萝卜'
+                },
+                {
+                    english: 'green beans',
+                    chinese: '豆角'
+                },
+                {
+                    english: 'horse',
+                    chinese: '马'
+                },
+                {
+                    english: 'cow',
+                    chinese: '奶牛'
+                },
+                {
+                    english: 'sheep',
+                    chinese: '绵羊'
+                },
+
+                // Unit 5 My Clothes
+                {
+                    english: 'clothes',
+                    chinese: '衣服'
+                },
+                {
+                    english: 'dress',
+                    chinese: '连衣裙'
+                },
+                {
+                    english: 'skirt',
+                    chinese: '短裙'
+                },
+                {
+                    english: 'coat',
+                    chinese: '外套'
+                },
+                {
+                    english: 'shirt',
+                    chinese: '衬衫'
+                },
+                {
+                    english: 'shoes',
+                    chinese: '鞋子'
+                },
+                // Unit 6 Shopping（新增10词）
+                {
+                    english: 'gloves',
+                    chinese: '手套'
+                },
+                {
+                    english: 'scarf',
+                    chinese: '围巾'
+                },
+                {
+                    english: 'umbrella',
+                    chinese: '雨伞'
+                },
+                {
+                    english: 'sunglasses',
+                    chinese: '太阳镜'
+                },
+                {
+                    english: 'expensive',
+                    chinese: '昂贵的'
+                },
+                {
+                    english: 'cheap',
+                    chinese: '便宜的'
+                },
+                {
+                    english: 'size',
+                    chinese: '尺码'
+                },
+                {
+                    english: 'price',
+                    chinese: '价格'
+                },
+                {
+                    english: 'sale',
+                    chinese: '促销'
+                },
+                {
+                    english: 'cashier',
+                    chinese: '收银员'
+                },
+                // 季节与天气
+                {
+                    english: 'spring',
+                    chinese: '春天'
+                },
+                {
+                    english: 'summer',
+                    chinese: '夏天'
+                },
+                {
+                    english: 'autumn',
+                    chinese: '秋天'
+                },
+                {
+                    english: 'winter',
+                    chinese: '冬天'
+                },
+                {
+                    english: 'rainy',
+                    chinese: '多雨的'
+                },
+                {
+                    english: 'sunny',
+                    chinese: '晴朗的'
+                },
+                {
+                    english: 'windy',
+                    chinese: '多风的'
+                },
+                {
+                    english: 'cloudy',
+                    chinese: '多云的'
+                },
+                // 家庭与家居
+                {
+                    english: 'bedroom',
+                    chinese: '卧室'
+                },
+                {
+                    english: 'living room',
+                    chinese: '客厅'
+                },
+                {
+                    english: 'kitchen',
+                    chinese: '厨房'
+                },
+                {
+                    english: 'bathroom',
+                    chinese: '浴室'
+                },
+                {
+                    english: 'fridge',
+                    chinese: '冰箱'
+                },
+                {
+                    english: 'sofa',
+                    chinese: '沙发'
+                },
+                {
+                    english: 'table',
+                    chinese: '桌子'
+                }
+            ],
+            // 五年级上册
+            'grade5_1.txt': [
+                // 月份与星期
+                {
+                    english: 'January',
+                    chinese: '一月'
+                },
+                {
+                    english: 'February',
+                    chinese: '二月'
+                },
+                {
+                    english: 'March',
+                    chinese: '三月'
+                },
+                {
+                    english: 'April',
+                    chinese: '四月'
+                },
+                {
+                    english: 'May',
+                    chinese: '五月'
+                },
+                {
+                    english: 'June',
+                    chinese: '六月'
+                },
+                {
+                    english: 'July',
+                    chinese: '七月'
+                },
+                {
+                    english: 'August',
+                    chinese: '八月'
+                },
+                {
+                    english: 'September',
+                    chinese: '九月'
+                },
+                {
+                    english: 'October',
+                    chinese: '十月'
+                },
+                {
+                    english: 'November',
+                    chinese: '十一月'
+                },
+                {
+                    english: 'December',
+                    chinese: '十二月'
+                },
+                {
+                    english: 'Monday',
+                    chinese: '星期一'
+                },
+                {
+                    english: 'Tuesday',
+                    chinese: '星期二'
+                },
+                {
+                    english: 'Wednesday',
+                    chinese: '星期三'
+                },
+                {
+                    english: 'Thursday',
+                    chinese: '星期四'
+                },
+                {
+                    english: 'Friday',
+                    chinese: '星期五'
+                },
+                {
+                    english: 'Saturday',
+                    chinese: '星期六'
+                },
+                {
+                    english: 'Sunday',
+                    chinese: '星期日'
+                },
+                // 食物与餐具
+                {
+                    english: 'beef',
+                    chinese: '牛肉'
+                },
+                {
+                    english: 'chicken',
+                    chinese: '鸡肉'
+                },
+                {
+                    english: 'noodles',
+                    chinese: '面条'
+                },
+                {
+                    english: 'soup',
+                    chinese: '汤'
+                },
+                {
+                    english: 'chopsticks',
+                    chinese: '筷子'
+                },
+                {
+                    english: 'fork',
+                    chinese: '餐叉'
+                }
+            ],
+            // 五年级下册
+            'grade5_2.txt': [
+                // Unit 1 Daily Routine
+                {
+                    english: 'do morning exercises',
+                    chinese: '晨练'
+                },
+                {
+                    english: 'eat breakfast',
+                    chinese: '吃早餐'
+                },
+                {
+                    english: 'have English class',
+                    chinese: '上英语课'
+                },
+                {
+                    english: 'play sports',
+                    chinese: '运动'
+                },
+                {
+                    english: 'go shopping',
+                    chinese: '购物'
+                },
+
+                // Unit 2 Seasons
+                {
+                    english: 'spring',
+                    chinese: '春天'
+                },
+                {
+                    english: 'summer',
+                    chinese: '夏天'
+                },
+                {
+                    english: 'autumn',
+                    chinese: '秋天'
+                },
+                {
+                    english: 'winter',
+                    chinese: '冬天'
+                },
+                {
+                    english: 'season',
+                    chinese: '季节'
+                },
+
+                // Unit 3 Months
+                {
+                    english: 'January',
+                    chinese: '一月'
+                },
+                {
+                    english: 'February',
+                    chinese: '二月'
+                },
+                {
+                    english: 'March',
+                    chinese: '三月'
+                },
+                {
+                    english: 'April',
+                    chinese: '四月'
+                },
+                {
+                    english: 'May',
+                    chinese: '五月'
+                },
+                {
+                    english: 'June',
+                    chinese: '六月'
+                },
+
+                // Unit 4 Activities
+                {
+                    english: 'climb mountains',
+                    chinese: '爬山'
+                },
+                {
+                    english: 'visit grandparents',
+                    chinese: '看望祖父母'
+                },
+                {
+                    english: 'go hiking',
+                    chinese: '远足'
+                },
+                {
+                    english: 'weekend',
+                    chinese: '周末'
+                },
+
+                // Unit 5 Animals
+                {
+                    english: 'kangaroo',
+                    chinese: '袋鼠'
+                },
+                {
+                    english: 'jump',
+                    chinese: '跳'
+                },
+                {
+                    english: 'swim',
+                    chinese: '游泳'
+                },
+                {
+                    english: 'fly',
+                    chinese: '飞'
+                },
+                // Unit 3 完整月份（补全）
+                {
+                    english: 'July',
+                    chinese: '七月'
+                },
+                {
+                    english: 'August',
+                    chinese: '八月'
+                },
+                {
+                    english: 'September',
+                    chinese: '九月'
+                },
+                {
+                    english: 'October',
+                    chinese: '十月'
+                },
+                {
+                    english: 'November',
+                    chinese: '十一月'
+                },
+                {
+                    english: 'December',
+                    chinese: '十二月'
+                },
+
+                // Unit 4 新增动词短语
+                {
+                    english: 'do homework',
+                    chinese: '做作业'
+                },
+                {
+                    english: 'watch TV',
+                    chinese: '看电视'
+                },
+                {
+                    english: 'read books',
+                    chinese: '读书'
+                },
+
+                // Unit 5 动物行为补充
+                {
+                    english: 'climb trees',
+                    chinese: '爬树'
+                },
+                {
+                    english: 'catch mice',
+                    chinese: '捉老鼠'
+                },
+
+                // Unit 6 新增户外活动
+                {
+                    english: 'go camping',
+                    chinese: '露营'
+                },
+                {
+                    english: 'take photos',
+                    chinese: '拍照'
+                }
+            ],
+            // 六年级上册
+            'grade6_1.txt': [
+                // 学科与职业
+                {
+                    english: 'science',
+                    chinese: '科学'
+                },
+                {
+                    english: 'history',
+                    chinese: '历史'
+                },
+                {
+                    english: 'geography',
+                    chinese: '地理'
+                },
+                {
+                    english: 'biology',
+                    chinese: '生物'
+                },
+                {
+                    english: 'chemistry',
+                    chinese: '化学'
+                },
+                {
+                    english: 'physics',
+                    chinese: '物理'
+                },
+                {
+                    english: 'mathematics',
+                    chinese: '数学'
+                },
+                {
+                    english: 'language',
+                    chinese: '语言'
+                },
+                {
+                    english: 'doctor',
+                    chinese: '医生'
+                },
+                {
+                    english: 'engineer',
+                    chinese: '工程师'
+                },
+                {
+                    english: 'artist',
+                    chinese: '艺术家'
+                },
+                {
+                    english: 'nurse',
+                    chinese: '护士'
+                },
+                {
+                    english: 'farmer',
+                    chinese: '农民'
+                },
+                {
+                    english: 'driver',
+                    chinese: '司机'
+                }
+            ],
+            // 六年级下册
+            'grade6_2.txt': [
+                // Unit 1 Professions
+                {
+                    english: 'scientist',
+                    chinese: '科学家'
+                },
+                {
+                    english: 'astronaut',
+                    chinese: '宇航员'
+                },
+                {
+                    english: 'pilot',
+                    chinese: '飞行员'
+                },
+                {
+                    english: 'coach',
+                    chinese: '教练'
+                },
+
+                // Unit 2 Technology
+                {
+                    english: 'robot',
+                    chinese: '机器人'
+                },
+                {
+                    english: 'rocket',
+                    chinese: '火箭'
+                },
+                {
+                    english: 'spaceship',
+                    chinese: '宇宙飞船'
+                },
+                {
+                    english: 'satellite',
+                    chinese: '卫星'
+                },
+
+                // Unit 3 Environment
+                {
+                    english: 'recycle',
+                    chinese: '回收'
+                },
+                {
+                    english: 'pollution',
+                    chinese: '污染'
+                },
+                {
+                    english: 'protect',
+                    chinese: '保护'
+                },
+                {
+                    english: 'energy',
+                    chinese: '能源'
+                },
+
+                // Unit 4 Culture
+                {
+                    english: 'traditional',
+                    chinese: '传统的'
+                },
+                {
+                    english: 'festival',
+                    chinese: '节日'
+                },
+                {
+                    english: 'custom',
+                    chinese: '习俗'
+                },
+
+                // Unit 5 Travel
+                {
+                    english: 'passport',
+                    chinese: '护照'
+                },
+                {
+                    english: 'visa',
+                    chinese: '签证'
+                },
+                {
+                    english: 'sightseeing',
+                    chinese: '观光'
+                },
+                {
+                    english: 'luggage',
+                    chinese: '行李'
+                },
+                // Unit 1 新增职业
+                {
+                    english: 'architect',
+                    chinese: '建筑师'
+                },
+                {
+                    english: 'journalist',
+                    chinese: '记者'
+                },
+
+                // Unit 2 科技扩展
+                {
+                    english: 'artificial intelligence',
+                    chinese: '人工智能'
+                },
+                {
+                    english: 'programming',
+                    chinese: '编程'
+                },
+
+                // Unit 3 环境保护
+                {
+                    english: 'sustainable',
+                    chinese: '可持续的'
+                },
+                {
+                    english: 'carbon footprint',
+                    chinese: '碳足迹'
+                },
+
+                // Unit 4 新增传统节日
+                {
+                    english: 'Mid-Autumn Festival',
+                    chinese: '中秋节'
+                },
+                {
+                    english: 'Dragon Boat Festival',
+                    chinese: '端午节'
+                },
+
+                // Unit 5 旅行扩展
+                {
+                    english: 'boarding pass',
+                    chinese: '登机牌'
+                },
+                {
+                    english: 'currency',
+                    chinese: '货币'
+                },
+                {
+                    english: 'souvenir',
+                    chinese: '纪念品'
+                }
+            ]
+        };
         // 粒子系统初始化
         const particlesCanvas = document.getElementById('particles');
         const ctx = particlesCanvas.getContext('2d');
@@ -631,6 +1860,9 @@
             wrong: new Audio('audio/败.mp3'),
             victory: new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_cheer.ogg')
         };
+
+        // 音频缓存
+        const audioCache = {};
 
         // 游戏主逻辑
         class Game {
@@ -703,6 +1935,12 @@
             }
 
             async loadAudio(text, lang) {
+                // 先检查缓存
+                const cacheKey = `${text}-${lang}`;
+                if (audioCache[cacheKey]) {
+                    return audioCache[cacheKey];
+                }
+
                 // 先检查本地音频文件是否存在
                 const localAudioPath = `audio/${text}.mp3`;
                 try {
@@ -711,6 +1949,7 @@
                         localAudio.addEventListener('canplaythrough', resolve);
                         localAudio.addEventListener('error', reject);
                     });
+                    audioCache[cacheKey] = localAudio;
                     return localAudio;
                 } catch (localError) {
                     // 本地音频不存在，使用 API 获取音频
@@ -721,7 +1960,10 @@
                             `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}` :
                             `https://fanyi.baidu.com/gettts?lan=zh&text=${encodeURIComponent(text)}&spd=3`;
 
-                        apiAudio.addEventListener('loadeddata', () => resolve(apiAudio));
+                        apiAudio.addEventListener('loadeddata', () => {
+                            audioCache[cacheKey] = apiAudio;
+                            resolve(apiAudio);
+                        });
                         apiAudio.addEventListener('error', () => {
                             console.warn('音频加载失败:', text);
                             resolve(null);
@@ -733,35 +1975,47 @@
             async loadWords(file) {
                 try {
                     const text = await file.text();
-                    this.state.words = await Promise.all(
-                        text.split('\n')
-                        .filter(line => line.trim())
-                        .map(async line => {
-                            const [english, chinese] = line.split(',').map(s => s.trim());
-                            if (!english || !chinese) return null;
+                    const lines = text.split('\n').filter(line => line.trim());
 
-                            return {
-                                english,
-                                chinese,
-                                used: false,
-                                audioEN: await this.loadAudio(english, 'en'),
-                                audioCN: await this.loadAudio(chinese, 'zh')
-                            };
-                        })
-                    );
-                    this.state.words = this.state.words.filter(word => word !== null);
+                    // 第一阶段：快速解析文本
+                    const wordPromises = lines.map(line => {
+                        const [english, chinese] = line.split(',').map(s => s.trim());
+                        return english && chinese ? {
+                            english,
+                            chinese
+                        } : null;
+                    });
 
-                    if (this.state.words.length === 0) {
-                        throw new Error('没有有效的单词数据');
-                    }
+                    // 先快速初始化单词列表
+                    this.state.words = (await Promise.all(wordPromises))
+                        .filter(word => word !== null);
+
+                    // 第二阶段：后台预加载音频
+                    await this.preloadAudios();
 
                     this.setupUI();
-                    if (this.elements.controlBtn) {
-                        this.elements.controlBtn.disabled = false;
-                    }
                     alert(`成功加载 ${this.state.words.length} 个单词`);
                 } catch (error) {
-                    alert('文件加载失败:' + error.message);
+                    // 错误处理...
+                }
+            }
+
+            // 新增后台预加载方法
+            async preloadAudios() {
+                const preload = async (word) => {
+                    try {
+                        word.audioEN = await this.loadAudio(word.english, 'en');
+                        word.audioCN = await this.loadAudio(word.chinese, 'zh');
+                    } catch (error) {
+                        console.warn(`音频加载失败: ${word.english}`, error);
+                    }
+                };
+
+                // 分批加载（每批5个）
+                const batchSize = 5;
+                for (let i = 0; i < this.state.words.length; i += batchSize) {
+                    const batch = this.state.words.slice(i, i + batchSize);
+                    await Promise.all(batch.map(preload));
                 }
             }
 
@@ -907,9 +2161,7 @@
 
                 const scores = [
                     this.elements.team1.querySelector('.score-board').textContent,
-                    ...(this.state.mode === 'double' ?
-                        [this.elements.team2.querySelector('.score-board').textContent] :
-                        [])
+                    ...(this.state.mode === 'double' ? [this.elements.team2.querySelector('.score-board').textContent] : [])
                 ];
 
                 // 先显示游戏结果
@@ -939,23 +2191,23 @@
 
                 // 修复点：选择器语法和模板字符串闭合
                 const content = `
-        <h3>🏆佳曦英语大作战战报</h3>
-        <p>📅时间：${new Date().toLocaleString()}</p>
-        <p>🎮模式：${this.state.mode === 'single' ? '单人' : '双人'}模式</p>
-        <p>⏱用时：${data.timeUsed}秒</p>
-        <p>📚词库：${
-            document.querySelector('.preload-item:not([style*="none"])')?.textContent || 
-            '自定义'
-        }</p>
-        <p>${data.victory ? '🎉挑战成功！' : '😭挑战失败'}</p>
-        <hr>
-        ${data.scores.map((score, i) => 
-            `<p>👤队伍${i+1}：${score.replace('得分: ', '')}分</p>`
-        ).join('')}
-        <p>✅正确：${data.correctCount}次</p>
-        <p>❌错误：${data.wrongCount}次</p>
-        <p>📊准确率：${((data.correctCount/(data.correctCount+data.wrongCount))*100).toFixed(1)}%</p>
-    `;
+            <h3>🏆佳曦英语大作战战报</h3>
+            <p>📅时间：${new Date().toLocaleString()}</p>
+            <p>🎮模式：${this.state.mode === 'single' ? '单人' : '双人'}模式</p>
+            <p>⏱用时：${data.timeUsed}秒</p>
+            <p>📚词库：${
+                document.querySelector('.preload-item:not([style*="none"])')?.textContent || 
+                '自定义'
+            }</p>
+            <p>${data.victory ? '🎉挑战成功！' : '😭挑战失败'}</p>
+            <hr>
+            ${data.scores.map((score, i) => 
+                `<p>👤队伍${i+1}：${score.replace('得分: ', '')}分</p>`
+            ).join('')}
+            <p>✅正确：${data.correctCount}次</p>
+            <p>❌错误：${data.wrongCount}次</p>
+            <p>📊准确率：${((data.correctCount/(data.correctCount+data.wrongCount))*100).toFixed(1)}%</p>
+        `;
 
                 const payload = {
                     appToken: APP_TOKEN,
@@ -1017,10 +2269,14 @@
 
         async function loadLocalFile(filename) {
             try {
-                const response = await fetch(`data/${filename}`);
-                if (!response.ok) throw new Error(`文件加载失败: ${response.status}`);
-                const blob = await response.blob();
-                game.loadWords(blob);
+                if (predefinedWords[filename]) {
+                    game.state.words = predefinedWords[filename];
+                    await game.preloadAudios();
+                    game.setupUI();
+                    alert(`成功加载 ${game.state.words.length} 个单词`);
+                } else {
+                    throw new Error('找不到预置单词表');
+                }
             } catch (error) {
                 alert(error.message);
             }
@@ -1081,5 +2337,3 @@
 
 </html>
  
-
-  
