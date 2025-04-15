@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>佳曦🤺削西瓜🍉英语大作战</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            font-family: 'Segoe UI', system-ui;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+            min-height: 100vh;
+        }
+
+        /* 文件管理样式 */
+        .file-manager {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            position: relative;
+        }
+
+        .preload-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 8px;
+            display: none;
+            z-index: 100;
+            min-width: 150px;
+        }
+
+        .preload-item {
+            padding: 6px 12px;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .preload-item:hover {
+            background: #f1f5f9;
+        }
+
+        /* 上传区域 */
+        .upload-section {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        /* 主按钮 */
+        .main-btn {
+            padding: 10px 20px;
+            font-size: 13px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .main-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* 游戏控制 */
+        .game-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .styled-select {
+            padding: 8px 15px;
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            background: white;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* 计时器 */
+        .timer {
+            text-align: center;
+            font-size: 20px;
+            color: var(--dark);
+            margin: 10px 0;
+            font-weight: 600;
+        }
+
+        /* 游戏容器 */
+        .game-container {
+            display: grid;
+            gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+            height: calc(100vh - 280px);
+            /* 新增固定高度 */
+            min-height: 500px;
+        }
+
+        .double-mode.game-container {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            /* 修正网格布局 */
+        }
+
+        /* 题目框 */
+        .prompt-box {
+            background: white;
+            padding: 12px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            font-size: 18px;
+            margin: 0 8px 15px;
+            position: sticky;
+            top: 10px;
+            z-index: 50;
+        }
+
+        /* 单词区域 */
+        .team-area {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            /* 新增高度继承 */
+            overflow: hidden;
+            /* 新增溢出控制 */
+        }
+
+        /* 单词网格 */
+        .word-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            grid-auto-rows: minmax(60px, auto);
+            gap: 10px;
+            padding: 10px;
+            overflow-y: auto;
+            /* 新增滚动条 */
+        }
+
+        /* 单词按钮 */
+        .word-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            font-size: 14px;
+            word-break: break-word;
+            text-align: center;
+            line-height: 1.4;
+            transition: all 0.2s;
+            min-height: 60px;
+            border: none;
+            border-radius: 12px;
+            background: var(--light);
+            color: var(--dark);
+            cursor: pointer;
+        }
+
+        .word-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .word-btn.correct {
+            background: var(--success);
+            color: white;
+            animation: pop 0.3s;
+        }
+
+        .word-btn.wrong {
+            background: var(--danger);
+            color: white;
+            animation: shake 0.3s;
+        }
+
+        /* 计分板 */
+        .score-board {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 18px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* 粒子特效 */
+        #particles {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* 动画 */
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-3px);
+            }
+
+            50% {
+                transform: translateX(3px);
+            }
+
+            75% {
+                transform: translateX(-3px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scorePop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes promptFade {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 夜间模式 */
+        body.night-mode {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: var(--light);
+        }
+
+        body.night-mode .main-btn {
+            background: var(--light);
+            color: var(--dark);
+            box-shadow: 0 2px 8px rgba(248, 250, 252, 0.2);
+        }
+
+        body.night-mode .word-btn {
+            background: var(--dark);
+            color: var(--light);
+        }
+
+        body.night-mode .timer {
+            color: white;
+            /* 设置夜间模式下计时器的文本颜色为白色 */
+        }
+
+        body.night-mode .preload-list {
+            background: var(--dark);
+            color: var(--light);
+        }
+
+        body.night-mode .preload-item:hover {
+            background: #475569;
+        }
+
+        body.night-mode .prompt-box {
+            background: var(--dark);
+            color: var(--light);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .game-container {
+                height: auto;
+                min-height: 400px;
+            }
+
+            .team-area {
+                min-height: 45vh;
+                padding: 10px;
+            }
+
+            .word-grid {
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            }
+
+            .word-btn {
+                min-height: 50px;
+                font-size: 13px;
+                padding: 8px;
+            }
+
+            .main-btn {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+
+            .prompt-box {
+                font-size: 16px;
+                margin: 0 5px 10px;
+            }
+
+            .double-mode.game-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .word-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
+
+            .word-btn {
+                min-height: 45px;
+                font-size: 12px;
+            }
+        }
+
+        /* 游戏容器 */
+        .game-container {
+            display: grid;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+            height: calc(100vh - 300px);
+            /* 动态高度 */
+            min-height: 500px;
+        }
+
+        /* 单人模式 */
+        .single-mode .game-container {
+            grid-template-columns: 1fr;
+            justify-content: center;
+            max-width: 800px;
+            /* 单人模式更紧凑 */
+        }
+
+        /* 双人模式 */
+        .double-mode .game-container {
+            grid-template-columns: repeat(2, minmax(400px, 1fr));
+            /* 保证最小宽度 */
+            align-items: start;
+        }
+
+        /* 单词区域 */
+        .team-area {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            /* 继承容器高度 */
+            overflow: hidden;
+            /* 关键修复 */
+        }
+
+        /* 单词网格 */
+        .word-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            grid-auto-rows: minmax(80px, auto);
+            gap: 15px;
+            padding: 10px;
+            overflow-y: auto;
+            /* 添加滚动条 */
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 1024px) {
+            .game-container {
+                height: auto;
+                min-height: 600px;
+            }
+
+            .double-mode .game-container {
+                grid-template-columns: 1fr;
+                /* 小屏幕单列显示 */
+                gap: 15px;
+            }
+
+            .team-area {
+                min-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .word-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                grid-auto-rows: minmax(70px, auto);
+            }
+        }
+
+        /* 修改游戏容器 */
+        .game-container {
+            display: grid;
+            gap: 10px;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            height: calc(100vh - 260px);
+            min-height: 400px;
+        }
+
+        /* 双人模式网格布局 */
+        .double-mode .game-container {
+            grid-template-columns: repeat(2, minmax(150px, 1fr));
+            /* 最小150px列宽 */
+        }
+
+        /* 单词区域优化 */
+        .team-area {
+            padding: 12px;
+            min-width: 150px;
+            /* 防止内容挤压 */
+        }
+
+        /* 单词按钮移动端优化 */
+        .word-btn {
+            padding: 8px;
+            font-size: 13px;
+            min-height: 50px;
+            line-height: 1.3;
+        }
+
+        /* 移动端特定适配 */
+        @media (max-width: 480px) {
+            .game-container {
+                height: calc(100vh - 220px);
+                min-height: 320px;
+                gap: 8px;
+            }
+
+            /* 双人模式微调 */
+            .double-mode .game-container {
+                grid-template-columns: repeat(2, minmax(140px, 1fr));
+            }
+
+            /* 单词按钮进一步缩小 */
+            .word-btn {
+                font-size: 12px;
+                min-height: 45px;
+                padding: 6px;
+            }
+
+            /* 计分板缩小 */
+            .score-board {
+                font-size: 16px;
+                bottom: 6px;
+                right: 6px;
+            }
+        }
+
+        /* 保留原有媒体查询 */
+        @media (max-width: 768px) {
+            /* 移除原强制单列显示的代码 */
+            /* .double-mode.game-container { grid-template-columns: 1fr; } */
+
+            /* 调整标题框位置 */
+            .prompt-box {
+                position: static;
+                margin: 10px 0;
+            }
+        }
+
+        .single-mode #team2 {
+            display: none;
+            /* 隐藏第二个游戏框 */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 添加文件输入元素 -->
+    <input type="file" id="wordFile" hidden accept=".txt">
+    <canvas id="particles"></canvas>
+
+    <div class="header">
+        <!-- 已移除标题和关卡提示 -->
+        <div class="upload-section">
+            <div class="file-manager">
+                <button class="main-btn" onclick="showPreloadList()">
+                    📁 单词列表
+                </button>
+                <div class="preload-list" id="preloadList">
+                    <div class="preload-item" onclick="loadLocalFile('grade3_1.txt')">三年级上册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade3_2.txt')">三年级下册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade4_1.txt')">四年级上册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade4_2.txt')">四年级下册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade5_1.txt')">五年级上册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade5_2.txt')">五年级下册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade6_1.txt')">六年级上册</div>
+                    <div class="preload-item" onclick="loadLocalFile('grade6_2.txt')">六年级下册</div>
+                </div>
+            </div>
+            <button class="main-btn" onclick="document.getElementById('wordFile').click()">
+                📄 上传单词
+            </button>
+            <button class="main-btn" onclick="loadOnlineFile()">
+                🌐 网络更新
+            </button>
+
+        </div>
+
+        <div class="game-controls">
+            <button class="main-btn" onclick="toggleNightMode()">🌙 夜间模式</button>
+            <select class="styled-select" id="modeSelect">
+                <option value="single">单人模式</option>
+                <option value="double">双人模式</option>
+            </select>
+            <button class="main-btn" id="controlBtn">开始游戏</button>
+        </div>
+        <div class="timer" id="timer">3:00</div>
+        <div class="prompt-box">
+            当前题目：<span id="currentPrompt"></span>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div class="team-area" id="team1">
+            <div class="word-grid"></div>
+            <div class="score-board">得分: 0</div>
+        </div>
+        <div class="team-area" id="team2">
+            <div class="word-grid"></div>
+            <div class="score-board">得分: 0</div>
+        </div>
+    </div>
+
+    <!-- 游戏容器部分保持不变 -->
+
+    <script>
+        const predefinedWords = {
+            // 三年级上册
+            'grade3_1.txt': [{
+                    english: 'ruler',
+                    chinese: '尺子'
+                },
+                {
+                    english: 'pencil',
+                    chinese: '铅笔'
+                },
+                {
+                    english: 'eraser',
+                    chinese: '橡皮'
+                },
+                {
+                    english: 'crayon',
+                    chinese: '蜡笔'
+                },
+                {
+                    english: 'bag',
+                    chinese: '书包'
+                },
+                {
+                    english: 'pen',
+                    chinese: '钢笔'
+                },
+                {
+                    english: 'book',
+                    chinese: '书'
+                },
+                {
+                    english: 'sharpener',
+                    chinese: '卷笔刀'
+                },
+                {
+                    english: 'school',
+                    chinese: '学校'
+                },
+                {
+                    english: 'head',
+                    chinese: '头'
+                },
+                {
+                    english: 'face',
+                    chinese: '脸'
+                },
+                {
+                    english: 'nose',
+                    chinese: '鼻子'
+                },
+                {
+                    english: 'mouth',
+                    chinese: '嘴'
+                },
+                {
+                    english: 'eye',
+                    chinese: '眼睛'
+                },
+                {
+                    english: 'ear',
+                    chinese: '耳朵'
+                },
+                {
+                    english: 'arm',
+                    chinese: '手臂'
+                },
+                {
+                    english: 'leg',
+                    chinese: '腿'
+                },
+                {
+                    english: 'foot',
+                    chinese: '脚'
+                },
+                {
+                    english: 'red',
+                    chinese: '红色'
+                },
+                {
+                    english: 'yellow',
+                    chinese: '黄色'
+                },
+                {
+                    english: 'green',
+                    chinese: '绿色'
+                },
+                {
+                    english: 'blue',
+                    chinese: '蓝色'
+                },
+                {
+                    english: 'black',
+                    chinese: '黑色'
+                },
+                {
+                    english: 'white',
+                    chinese: '白色'
+                },
+                {
+                    english: 'orange',
+                    chinese: '橙色'
+                },
+                {
+                    english: 'cat',
+                    chinese: '猫'
+                },
+                {
+                    english: 'dog',
+                    chinese: '狗'
+                },
+                {
+                    english: 'panda',
+                    chinese: '熊猫'
+                },
+                {
+                    english: 'bird',
+                    chinese: '鸟'
+                },
+                {
+                    english: 'tiger',
+                    chinese: '老虎'
+                },
+                {
+                    english: 'zoo',
+                    chinese: '动物园'
+                },
+                {
+                    english: 'cake',
+                    chinese: '蛋糕'
+                },
+                {
+                    english: 'bread',
+                    chinese: '面包'
+                },
+                {
+                    english: 'milk',
+                    chinese: '牛奶'
+                },
+                {
+                    english: 'water',
+                    chinese: '水'
+                },
+                {
+                    english: 'fish',
+                    chinese: '鱼'
+                },
+                {
+                    english: 'rice',
+                    chinese: '米饭'
+                },
+                {
+                    english: 'one',
+                    chinese: '一'
+                },
+                {
+                    english: 'two',
+                    chinese: '二'
+                },
+                {
+                    english: 'three',
+                    chinese: '三'
+                },
+                {
+                    english: 'four',
+                    chinese: '四'
+                },
+                {
+                    english: 'five',
+                    chinese: '五'
+                },
+                {
+                    english: 'six',
+                    chinese: '六'
+                },
+                {
+                    english: 'seven',
+                    chinese: '七'
+                },
+                {
+                    english: 'eight',
+                    chinese: '八'
+                },
+                {
+                    english: 'nine',
+                    chinese: '九'
+                },
+                {
+                    english: 'ten',
+                    chinese: '十'
+                }
+            ],
+            // 三年级下册
+            'grade3_2.txt': [{
+                    english: 'girl',
+                    chinese: '女孩'
+                },
+                {
+                    english: 'family',
+                    chinese: '家庭'
+                },
+                {
+                    english: 'father',
+                    chinese: '爸爸'
+                },
+                {
+                    english: 'mother',
+                    chinese: '妈妈'
+                },
+                {
+                    english: 'brother',
+                    chinese: '兄弟'
+                },
+                {
+                    english: 'sister',
+                    chinese: '姐妹'
+                },
+                {
+                    english: 'grandpa',
+                    chinese: '爷爷'
+                },
+                {
+                    english: 'grandma',
+                    chinese: '奶奶'
+                },
+                {
+                    english: 'apple',
+                    chinese: '苹果'
+                },
+                {
+                    english: 'banana',
+                    chinese: '香蕉'
+                },
+                {
+                    english: 'orange',
+                    chinese: '橙子'
+                },
+                {
+                    english: 'grape',
+                    chinese: '葡萄'
+                },
+                {
+                    english: 'like',
+                    chinese: '喜欢'
+                },
+                {
+                    english: 'monkey',
+                    chinese: '猴子'
+                },
+                {
+                    english: 'elephant',
+                    chinese: '大象'
+                },
+                {
+                    english: 'lion',
+                    chinese: '狮子'
+                },
+                {
+                    english: 'giraffe',
+                    chinese: '长颈鹿'
+                },
+                {
+                    english: 'tall',
+                    chinese: '高的'
+                },
+                {
+                    english: 'short',
+                    chinese: '矮的'
+                },
+                // Unit 4 Where is my car?
+                {
+                    english: 'car',
+                    chinese: '小汽车'
+                },
+                {
+                    english: 'boat',
+                    chinese: '小船'
+                },
+                {
+                    english: 'map',
+                    chinese: '地图'
+                },
+                {
+                    english: 'cap',
+                    chinese: '帽子'
+                },
+                // Unit 5 Do you like pears?
+                {
+                    english: 'pear',
+                    chinese: '梨'
+                },
+                {
+                    english: 'strawberry',
+                    chinese: '草莓'
+                },
+                {
+                    english: 'watermelon',
+                    chinese: '西瓜'
+                },
+                // Unit 6 How many?
+                {
+                    english: 'eleven',
+                    chinese: '十一'
+                },
+                {
+                    english: 'twelve',
+                    chinese: '十二'
+                },
+                {
+                    english: 'thirteen',
+                    chinese: '十三'
+                },
+                {
+                    english: 'fifteen',
+                    chinese: '十五'
+                },
+                {
+                    english: 'twenty',
+                    chinese: '二十'
+                },
+
+
+            ],
+            // 四年级上册
+            'grade4_1.txt': [
+                // 教室与学校相关
+                {
+                    english: 'classroom',
+                    chinese: '教室'
+                },
+                {
+                    english: 'window',
+                    chinese: '窗户'
+                },
+                {
+                    english: 'blackboard',
+                    chinese: '黑板'
+                },
+                {
+                    english: 'light',
+                    chinese: '电灯'
+                },
+                {
+                    english: 'picture',
+                    chinese: '图画'
+                },
+                {
+                    english: 'door',
+                    chinese: '门'
+                },
+                {
+                    english: 'teacher\'s desk',
+                    chinese: '讲台'
+                },
+                {
+                    english: 'computer',
+                    chinese: '计算机'
+                },
+                {
+                    english: 'fan',
+                    chinese: '风扇'
+                },
+                {
+                    english: 'wall',
+                    chinese: '墙壁'
+                },
+                {
+                    english: 'floor',
+                    chinese: '地板'
+                },
+                {
+                    english: 'TV',
+                    chinese: '电视'
+                },
+                {
+                    english: 'clean',
+                    chinese: '打扫'
+                },
+                {
+                    english: 'help',
+                    chinese: '帮助'
+                },
+                // 书包与学习用品
+                {
+                    english: 'schoolbag',
+                    chinese: '书包'
+                },
+                {
+                    english: 'maths book',
+                    chinese: '数学书'
+                },
+                {
+                    english: 'English book',
+                    chinese: '英语书'
+                },
+                {
+                    english: 'Chinese book',
+                    chinese: '语文书'
+                },
+                {
+                    english: 'storybook',
+                    chinese: '故事书'
+                },
+                {
+                    english: 'notebook',
+                    chinese: '笔记本'
+                },
+                {
+                    english: 'toy',
+                    chinese: '玩具'
+                },
+                {
+                    english: 'key',
+                    chinese: '钥匙'
+                },
+                // 人物与性格
+                {
+                    english: 'strong',
+                    chinese: '强壮的'
+                },
+                {
+                    english: 'friendly',
+                    chinese: '友好的'
+                },
+                {
+                    english: 'quiet',
+                    chinese: '安静的'
+                },
+                {
+                    english: 'glasses',
+                    chinese: '眼镜'
+                },
+                {
+                    english: 'hat',
+                    chinese: '帽子'
+                },
+                // Unit 1 My classroom
+                {
+                    english: 'classroom',
+                    chinese: '教室'
+                },
+                {
+                    english: 'really',
+                    chinese: '真的'
+                }, // 新增
+                {
+                    english: 'near',
+                    chinese: '靠近'
+                }, // 新增
+
+                // Unit 2 My schoolbag
+                {
+                    english: 'schoolbag',
+                    chinese: '书包'
+                },
+                {
+                    english: 'lost',
+                    chinese: '丢失'
+                }, // 新增
+
+                // Unit 3 My friends
+                {
+                    english: 'friendly',
+                    chinese: '友好的'
+                },
+                {
+                    english: 'quiet',
+                    chinese: '安静的'
+                },
+                {
+                    english: 'hair',
+                    chinese: '头发'
+                }, // 新增
+                {
+                    english: 'shoe',
+                    chinese: '鞋子'
+                }, // 新增
+
+                // Unit 4 My home
+                {
+                    english: 'bedroom',
+                    chinese: '卧室'
+                },
+                {
+                    english: 'sofa',
+                    chinese: '沙发'
+                },
+                {
+                    english: 'fridge',
+                    chinese: '冰箱'
+                },
+                {
+                    english: 'phone',
+                    chinese: '电话'
+                } // 新增
+            ],
+
+            // 四年级下册
+            'grade4_2.txt': [
+                // Unit 1 My School
+                {
+                    english: 'first floor',
+                    chinese: '一楼'
+                },
+                {
+                    english: 'second floor',
+                    chinese: '二楼'
+                },
+                {
+                    english: 'teachers\' office',
+                    chinese: '教师办公室'
+                },
+                {
+                    english: 'library',
+                    chinese: '图书馆'
+                },
+                {
+                    english: 'playground',
+                    chinese: '操场'
+                },
+                {
+                    english: 'computer room',
+                    chinese: '计算机房'
+                },
+                {
+                    english: 'art room',
+                    chinese: '美术教室'
+                },
+                {
+                    english: 'music room',
+                    chinese: '音乐教室'
+                },
+
+                // Unit 2 What Time Is It?
+                {
+                    english: 'breakfast',
+                    chinese: '早餐'
+                },
+                {
+                    english: 'English class',
+                    chinese: '英语课'
+                },
+                {
+                    english: 'lunch',
+                    chinese: '午餐'
+                },
+                {
+                    english: 'PE class',
+                    chinese: '体育课'
+                },
+                {
+                    english: 'dinner',
+                    chinese: '晚餐'
+                },
+                {
+                    english: 'get up',
+                    chinese: '起床'
+                },
+                {
+                    english: 'go to school',
+                    chinese: '上学'
+                },
+
+                // Unit 3 Weather
+                {
+                    english: 'cold',
+                    chinese: '寒冷的'
+                },
+                {
+                    english: 'warm',
+                    chinese: '温暖的'
+                },
+                {
+                    english: 'hot',
+                    chinese: '炎热的'
+                },
+                {
+                    english: 'sunny',
+                    chinese: '晴朗的'
+                },
+                {
+                    english: 'rainy',
+                    chinese: '多雨的'
+                },
+                {
+                    english: 'windy',
+                    chinese: '多风的'
+                },
+                {
+                    english: 'cloudy',
+                    chinese: '多云的'
+                },
+
+                // Unit 4 At the Farm
+                {
+                    english: 'tomato',
+                    chinese: '西红柿'
+                },
+                {
+                    english: 'potato',
+                    chinese: '土豆'
+                },
+                {
+                    english: 'carrot',
+                    chinese: '胡萝卜'
+                },
+                {
+                    english: 'green beans',
+                    chinese: '豆角'
+                },
+                {
+                    english: 'horse',
+                    chinese: '马'
+                },
+                {
+                    english: 'cow',
+                    chinese: '奶牛'
+                },
+                {
+                    english: 'sheep',
+                    chinese: '绵羊'
+                },
+
+                // Unit 5 My Clothes
+                {
+                    english: 'clothes',
+                    chinese: '衣服'
+                },
+                {
+                    english: 'dress',
+                    chinese: '连衣裙'
+                },
+                {
+                    english: 'skirt',
+                    chinese: '短裙'
+                },
+                {
+                    english: 'coat',
+                    chinese: '外套'
+                },
+                {
+                    english: 'shirt',
+                    chinese: '衬衫'
+                },
+                {
+                    english: 'shoes',
+                    chinese: '鞋子'
+                },
+                // Unit 6 Shopping（新增10词）
+                {
+                    english: 'gloves',
+                    chinese: '手套'
+                },
+                {
+                    english: 'scarf',
+                    chinese: '围巾'
+                },
+                {
+                    english: 'umbrella',
+                    chinese: '雨伞'
+                },
+                {
+                    english: 'sunglasses',
+                    chinese: '太阳镜'
+                },
+                {
+                    english: 'expensive',
+                    chinese: '昂贵的'
+                },
+                {
+                    english: 'cheap',
+                    chinese: '便宜的'
+                },
+                {
+                    english: 'size',
+                    chinese: '尺码'
+                },
+                {
+                    english: 'price',
+                    chinese: '价格'
+                },
+                {
+                    english: 'sale',
+                    chinese: '促销'
+                },
+                {
+                    english: 'cashier',
+                    chinese: '收银员'
+                },
+                // 季节与天气
+                {
+                    english: 'spring',
+                    chinese: '春天'
+                },
+                {
+                    english: 'summer',
+                    chinese: '夏天'
+                },
+                {
+                    english: 'autumn',
+                    chinese: '秋天'
+                },
+                {
+                    english: 'winter',
+                    chinese: '冬天'
+                },
+                {
+                    english: 'rainy',
+                    chinese: '多雨的'
+                },
+                {
+                    english: 'sunny',
+                    chinese: '晴朗的'
+                },
+                {
+                    english: 'windy',
+                    chinese: '多风的'
+                },
+                {
+                    english: 'cloudy',
+                    chinese: '多云的'
+                },
+                // 家庭与家居
+                {
+                    english: 'bedroom',
+                    chinese: '卧室'
+                },
+                {
+                    english: 'living room',
+                    chinese: '客厅'
+                },
+                {
+                    english: 'kitchen',
+                    chinese: '厨房'
+                },
+                {
+                    english: 'bathroom',
+                    chinese: '浴室'
+                },
+                {
+                    english: 'fridge',
+                    chinese: '冰箱'
+                },
+                {
+                    english: 'sofa',
+                    chinese: '沙发'
+                },
+                {
+                    english: 'table',
+                    chinese: '桌子'
+                }
+            ],
+            // 五年级上册
+            'grade5_1.txt': [
+                // 月份与星期
+                {
+                    english: 'January',
+                    chinese: '一月'
+                },
+                {
+                    english: 'February',
+                    chinese: '二月'
+                },
+                {
+                    english: 'March',
+                    chinese: '三月'
+                },
+                {
+                    english: 'April',
+                    chinese: '四月'
+                },
+                {
+                    english: 'May',
+                    chinese: '五月'
+                },
+                {
+                    english: 'June',
+                    chinese: '六月'
+                },
+                {
+                    english: 'July',
+                    chinese: '七月'
+                },
+                {
+                    english: 'August',
+                    chinese: '八月'
+                },
+                {
+                    english: 'September',
+                    chinese: '九月'
+                },
+                {
+                    english: 'October',
+                    chinese: '十月'
+                },
+                {
+                    english: 'November',
+                    chinese: '十一月'
+                },
+                {
+                    english: 'December',
+                    chinese: '十二月'
+                },
+                {
+                    english: 'Monday',
+                    chinese: '星期一'
+                },
+                {
+                    english: 'Tuesday',
+                    chinese: '星期二'
+                },
+                {
+                    english: 'Wednesday',
+                    chinese: '星期三'
+                },
+                {
+                    english: 'Thursday',
+                    chinese: '星期四'
+                },
+                {
+                    english: 'Friday',
+                    chinese: '星期五'
+                },
+                {
+                    english: 'Saturday',
+                    chinese: '星期六'
+                },
+                {
+                    english: 'Sunday',
+                    chinese: '星期日'
+                },
+                // 食物与餐具
+                {
+                    english: 'beef',
+                    chinese: '牛肉'
+                },
+                {
+                    english: 'chicken',
+                    chinese: '鸡肉'
+                },
+                {
+                    english: 'noodles',
+                    chinese: '面条'
+                },
+                {
+                    english: 'soup',
+                    chinese: '汤'
+                },
+                {
+                    english: 'chopsticks',
+                    chinese: '筷子'
+                },
+                {
+                    english: 'fork',
+                    chinese: '餐叉'
+                }
+            ],
+            // 五年级下册
+            'grade5_2.txt': [
+                // Unit 1 Daily Routine
+                {
+                    english: 'do morning exercises',
+                    chinese: '晨练'
+                },
+                {
+                    english: 'eat breakfast',
+                    chinese: '吃早餐'
+                },
+                {
+                    english: 'have English class',
+                    chinese: '上英语课'
+                },
+                {
+                    english: 'play sports',
+                    chinese: '运动'
+                },
+                {
+                    english: 'go shopping',
+                    chinese: '购物'
+                },
+
+                // Unit 2 Seasons
+                {
+                    english: 'spring',
+                    chinese: '春天'
+                },
+                {
+                    english: 'summer',
+                    chinese: '夏天'
+                },
+                {
+                    english: 'autumn',
+                    chinese: '秋天'
+                },
+                {
+                    english: 'winter',
+                    chinese: '冬天'
+                },
+                {
+                    english: 'season',
+                    chinese: '季节'
+                },
+
+                // Unit 3 Months
+                {
+                    english: 'January',
+                    chinese: '一月'
+                },
+                {
+                    english: 'February',
+                    chinese: '二月'
+                },
+                {
+                    english: 'March',
+                    chinese: '三月'
+                },
+                {
+                    english: 'April',
+                    chinese: '四月'
+                },
+                {
+                    english: 'May',
+                    chinese: '五月'
+                },
+                {
+                    english: 'June',
+                    chinese: '六月'
+                },
+
+                // Unit 4 Activities
+                {
+                    english: 'climb mountains',
+                    chinese: '爬山'
+                },
+                {
+                    english: 'visit grandparents',
+                    chinese: '看望祖父母'
+                },
+                {
+                    english: 'go hiking',
+                    chinese: '远足'
+                },
+                {
+                    english: 'weekend',
+                    chinese: '周末'
+                },
+
+                // Unit 5 Animals
+                {
+                    english: 'kangaroo',
+                    chinese: '袋鼠'
+                },
+                {
+                    english: 'jump',
+                    chinese: '跳'
+                },
+                {
+                    english: 'swim',
+                    chinese: '游泳'
+                },
+                {
+                    english: 'fly',
+                    chinese: '飞'
+                },
+                // Unit 3 完整月份（补全）
+                {
+                    english: 'July',
+                    chinese: '七月'
+                },
+                {
+                    english: 'August',
+                    chinese: '八月'
+                },
+                {
+                    english: 'September',
+                    chinese: '九月'
+                },
+                {
+                    english: 'October',
+                    chinese: '十月'
+                },
+                {
+                    english: 'November',
+                    chinese: '十一月'
+                },
+                {
+                    english: 'December',
+                    chinese: '十二月'
+                },
+
+                // Unit 4 新增动词短语
+                {
+                    english: 'do homework',
+                    chinese: '做作业'
+                },
+                {
+                    english: 'watch TV',
+                    chinese: '看电视'
+                },
+                {
+                    english: 'read books',
+                    chinese: '读书'
+                },
+
+                // Unit 5 动物行为补充
+                {
+                    english: 'climb trees',
+                    chinese: '爬树'
+                },
+                {
+                    english: 'catch mice',
+                    chinese: '捉老鼠'
+                },
+
+                // Unit 6 新增户外活动
+                {
+                    english: 'go camping',
+                    chinese: '露营'
+                },
+                {
+                    english: 'take photos',
+                    chinese: '拍照'
+                }
+            ],
+            // 六年级上册
+            'grade6_1.txt': [
+                // 学科与职业
+                {
+                    english: 'science',
+                    chinese: '科学'
+                },
+                {
+                    english: 'history',
+                    chinese: '历史'
+                },
+                {
+                    english: 'geography',
+                    chinese: '地理'
+                },
+                {
+                    english: 'biology',
+                    chinese: '生物'
+                },
+                {
+                    english: 'chemistry',
+                    chinese: '化学'
+                },
+                {
+                    english: 'physics',
+                    chinese: '物理'
+                },
+                {
+                    english: 'mathematics',
+                    chinese: '数学'
+                },
+                {
+                    english: 'language',
+                    chinese: '语言'
+                },
+                {
+                    english: 'doctor',
+                    chinese: '医生'
+                },
+                {
+                    english: 'engineer',
+                    chinese: '工程师'
+                },
+                {
+                    english: 'artist',
+                    chinese: '艺术家'
+                },
+                {
+                    english: 'nurse',
+                    chinese: '护士'
+                },
+                {
+                    english: 'farmer',
+                    chinese: '农民'
+                },
+                {
+                    english: 'driver',
+                    chinese: '司机'
+                }
+            ],
+            // 六年级下册
+            'grade6_2.txt': [
+                // Unit 1 Professions
+                {
+                    english: 'scientist',
+                    chinese: '科学家'
+                },
+                {
+                    english: 'astronaut',
+                    chinese: '宇航员'
+                },
+                {
+                    english: 'pilot',
+                    chinese: '飞行员'
+                },
+                {
+                    english: 'coach',
+                    chinese: '教练'
+                },
+
+                // Unit 2 Technology
+                {
+                    english: 'robot',
+                    chinese: '机器人'
+                },
+                {
+                    english: 'rocket',
+                    chinese: '火箭'
+                },
+                {
+                    english: 'spaceship',
+                    chinese: '宇宙飞船'
+                },
+                {
+                    english: 'satellite',
+                    chinese: '卫星'
+                },
+
+                // Unit 3 Environment
+                {
+                    english: 'recycle',
+                    chinese: '回收'
+                },
+                {
+                    english: 'pollution',
+                    chinese: '污染'
+                },
+                {
+                    english: 'protect',
+                    chinese: '保护'
+                },
+                {
+                    english: 'energy',
+                    chinese: '能源'
+                },
+
+                // Unit 4 Culture
+                {
+                    english: 'traditional',
+                    chinese: '传统的'
+                },
+                {
+                    english: 'festival',
+                    chinese: '节日'
+                },
+                {
+                    english: 'custom',
+                    chinese: '习俗'
+                },
+
+                // Unit 5 Travel
+                {
+                    english: 'passport',
+                    chinese: '护照'
+                },
+                {
+                    english: 'visa',
+                    chinese: '签证'
+                },
+                {
+                    english: 'sightseeing',
+                    chinese: '观光'
+                },
+                {
+                    english: 'luggage',
+                    chinese: '行李'
+                },
+                // Unit 1 新增职业
+                {
+                    english: 'architect',
+                    chinese: '建筑师'
+                },
+                {
+                    english: 'journalist',
+                    chinese: '记者'
+                },
+
+                // Unit 2 科技扩展
+                {
+                    english: 'artificial intelligence',
+                    chinese: '人工智能'
+                },
+                {
+                    english: 'programming',
+                    chinese: '编程'
+                },
+
+                // Unit 3 环境保护
+                {
+                    english: 'sustainable',
+                    chinese: '可持续的'
+                },
+                {
+                    english: 'carbon footprint',
+                    chinese: '碳足迹'
+                },
+
+                // Unit 4 新增传统节日
+                {
+                    english: 'Mid-Autumn Festival',
+                    chinese: '中秋节'
+                },
+                {
+                    english: 'Dragon Boat Festival',
+                    chinese: '端午节'
+                },
+
+                // Unit 5 旅行扩展
+                {
+                    english: 'boarding pass',
+                    chinese: '登机牌'
+                },
+                {
+                    english: 'currency',
+                    chinese: '货币'
+                },
+                {
+                    english: 'souvenir',
+                    chinese: '纪念品'
+                }
+            ]
+        };
+        // 粒子系统初始化
+        const particlesCanvas = document.getElementById('particles');
+        const ctx = particlesCanvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            particlesCanvas.width = window.innerWidth;
+            particlesCanvas.height = window.innerHeight;
+        }
+
+        function createParticles(x, y) {
+            for (let i = 0; i < 15; i++) {
+                particles.push({
+                    x,
+                    y,
+                    size: Math.random() * 4 + 2,
+                    speedX: (Math.random() - 0.5) * 5,
+                    speedY: (Math.random() - 0.5) * 5,
+                    color: `hsl(${Math.random() * 360}, 70%, 60%)`
+                });
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
+            particles.forEach((p, index) => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.size *= 0.93;
+
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (p.size < 0.5) particles.splice(index, 1);
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        // 音效系统
+        const audio = {
+            bgm: new Audio('https://actions.google.com/sounds/v1/cartoon/clang.ogg'),
+            correct: new Audio('audio/消.mp3'),
+            wrong: new Audio('audio/败.mp3'),
+            victory: new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_cheer.ogg')
+        };
+
+        // 音频缓存
+        const audioCache = {};
+
+        // 游戏主逻辑
+        class Game {
+            constructor() {
+                this.state = {
+                    isPlaying: false,
+                    words: [],
+                    currentPrompt: null,
+                    timeLeft: 180,
+                    mode: 'single', // 初始模式为单人模式
+                    audioLoopId: null,
+                    currentAudio: null,
+                    wrongCount: 0 // 新增错误计数器
+                };
+
+                this.initElements();
+                this.initCanvas();
+                this.initEvents();
+
+                // 调整：初始化时调用 changeMode() 确保页面状态正确
+                this.changeMode();
+
+                resizeCanvas();
+                animateParticles();
+                window.addEventListener('resize', () => {
+                    resizeCanvas();
+                    this.initCanvas();
+                });
+            }
+
+            initElements() {
+                this.elements = {
+                    modeSelect: document.getElementById('modeSelect'),
+                    controlBtn: document.getElementById('controlBtn'),
+                    wordFile: document.getElementById('wordFile'),
+                    timer: document.getElementById('timer'),
+                    currentPrompt: document.getElementById('currentPrompt'),
+                    team1: document.getElementById('team1'),
+                    team2: document.getElementById('team2'),
+                    preloadList: document.getElementById('preloadList')
+                };
+
+                // 元素存在性检查
+                Object.entries(this.elements).forEach(([key, el]) => {
+                    if (!el) console.error(`未找到元素: ${key}`);
+                });
+            }
+
+            initCanvas() {
+                this.particlesCanvas = document.getElementById('particles');
+                if (!this.particlesCanvas) {
+                    console.error("未找到粒子画布元素");
+                    return;
+                }
+                this.ctx = this.particlesCanvas.getContext('2d');
+                this.particles = [];
+                resizeCanvas();
+            }
+
+            initEvents() {
+                if (this.elements.modeSelect) {
+                    this.elements.modeSelect.addEventListener('change', () => this.changeMode());
+                }
+                if (this.elements.controlBtn) {
+                    this.elements.controlBtn.addEventListener('click', () => this.toggleGame());
+                }
+                if (this.elements.wordFile) {
+                    this.elements.wordFile.addEventListener('change', e => this.loadWords(e.target.files[0]));
+                }
+            }
+
+            async loadAudio(text, lang) {
+                // 先检查缓存
+                const cacheKey = `${text}-${lang}`;
+                if (audioCache[cacheKey]) {
+                    return audioCache[cacheKey];
+                }
+
+                // 先检查本地音频文件是否存在
+                const localAudioPath = `audio/${text}.mp3`;
+                try {
+                    const localAudio = new Audio(localAudioPath);
+                    await new Promise((resolve, reject) => {
+                        localAudio.addEventListener('canplaythrough', resolve);
+                        localAudio.addEventListener('error', reject);
+                    });
+                    audioCache[cacheKey] = localAudio;
+                    return localAudio;
+                } catch (localError) {
+                    // 本地音频不存在，使用 API 获取音频
+                    return new Promise((resolve) => {
+                        const apiAudio = new Audio();
+                        apiAudio.preload = 'auto';
+                        apiAudio.src = lang === 'en' ?
+                            `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}` :
+                            `https://fanyi.baidu.com/gettts?lan=zh&text=${encodeURIComponent(text)}&spd=3`;
+
+                        apiAudio.addEventListener('loadeddata', () => {
+                            audioCache[cacheKey] = apiAudio;
+                            resolve(apiAudio);
+                        });
+                        apiAudio.addEventListener('error', () => {
+                            console.warn('音频加载失败:', text);
+                            resolve(null);
+                        });
+                    });
+                }
+            }
+
+            async loadWords(file) {
+                try {
+                    const text = await file.text();
+                    const lines = text.split('\n').filter(line => line.trim());
+
+                    // 第一阶段：快速解析文本
+                    const wordPromises = lines.map(line => {
+                        const [english, chinese] = line.split(',').map(s => s.trim());
+                        return english && chinese ? {
+                            english,
+                            chinese
+                        } : null;
+                    });
+
+                    // 先快速初始化单词列表
+                    this.state.words = (await Promise.all(wordPromises))
+                        .filter(word => word !== null);
+
+                    // 第二阶段：后台预加载音频
+                    await this.preloadAudios();
+
+                    this.setupUI();
+                    alert(`成功加载 ${this.state.words.length} 个单词`);
+                } catch (error) {
+                    // 错误处理...
+                }
+            }
+
+            // 新增后台预加载方法
+            async preloadAudios() {
+                const preload = async (word) => {
+                    try {
+                        word.audioEN = await this.loadAudio(word.english, 'en');
+                        word.audioCN = await this.loadAudio(word.chinese, 'zh');
+                    } catch (error) {
+                        console.warn(`音频加载失败: ${word.english}`, error);
+                    }
+                };
+
+                // 分批加载（每批5个）
+                const batchSize = 5;
+                for (let i = 0; i < this.state.words.length; i += batchSize) {
+                    const batch = this.state.words.slice(i, i + batchSize);
+                    await Promise.all(batch.map(preload));
+                }
+            }
+
+            setupUI() {
+                // 清空现有按钮
+                document.querySelectorAll('.word-grid').forEach(grid => grid.innerHTML = '');
+            }
+
+            handleAnswer(word, btn) {
+                if (!this.state.isPlaying) return;
+
+                if (word.chinese === this.state.currentPrompt) {
+                    this.stopAudioLoop();
+                    audio.correct.play();
+                    createParticles(btn.getBoundingClientRect().left + btn.offsetWidth / 2,
+                        btn.getBoundingClientRect().top + btn.offsetHeight / 2);
+                    btn.classList.add('correct');
+                    this.updateScore(btn.closest('.team-area'), 10);
+
+                    setTimeout(() => {
+                        btn.remove();
+                        this.nextRound();
+                    }, 500);
+                } else {
+                    this.state.wrongCount++; // 新增错误计数
+                    audio.wrong.play();
+                    btn.classList.add('wrong');
+                    setTimeout(() => btn.classList.remove('wrong'), 500);
+                }
+            }
+
+            startAudioLoop() {
+                this.stopAudioLoop();
+                const currentWord = this.state.words.find(w => w.chinese === this.state.currentPrompt);
+
+                const playSequence = async () => {
+                    try {
+                        if (currentWord?.audioEN) {
+                            this.state.currentAudio = currentWord.audioEN;
+                            await this.state.currentAudio.play();
+                            await new Promise(r => setTimeout(r, 1000));
+                        }
+                        if (currentWord?.audioCN) {
+                            this.state.currentAudio = currentWord.audioCN;
+                            await this.state.currentAudio.play();
+                            await new Promise(r => setTimeout(r, 3000));
+                        }
+                    } catch (error) {
+                        console.log('自动播放被阻止');
+                    }
+                    this.state.audioLoopId = setTimeout(playSequence, 5000);
+                };
+
+                if (currentWord) playSequence();
+            }
+
+            stopAudioLoop() {
+                clearTimeout(this.state.audioLoopId);
+                if (this.state.currentAudio) {
+                    this.state.currentAudio.pause();
+                    this.state.currentAudio.currentTime = 0;
+                    this.state.currentAudio = null;
+                }
+            }
+
+            updateScore(container, points) {
+                const scoreElement = container.querySelector('.score-board');
+                const current = parseInt(scoreElement.textContent.match(/\d+/)) || 0;
+                scoreElement.textContent = `得分: ${current + points}`;
+                scoreElement.style.animation = 'scorePop 0.3s';
+            }
+
+            // 新增数组洗牌方法
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            // 修改后的nextRound方法
+            nextRound() {
+                const availableWords = this.state.words.filter(w => !w.used);
+                if (availableWords.length === 0) return this.endGame(true);
+
+                // 随机选择当前题目
+                const correctWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+                this.state.currentPrompt = correctWord.chinese;
+                this.state.words = this.state.words.map(w => 
+                    w.chinese === this.state.currentPrompt ? {...w, used: true} : w
+                );
+
+                // 生成12个单词（1个正确答案 + 11个随机错误答案）
+                const otherWords = this.state.words.filter(w => w !== correctWord);
+                const selectedWords = this.shuffleArray([correctWord, ...this.shuffleArray(otherWords).slice(0, 11)]);
+                
+                // 更新按钮
+                this.updateWordButtons(selectedWords);
+
+                this.elements.currentPrompt.textContent = this.state.currentPrompt;
+                this.elements.currentPrompt.style.animation = 'promptFade 0.4s';
+                this.startAudioLoop();
+            }
+            // 新增更新按钮方法
+            updateWordButtons(words) {
+                const createButtons = container => {
+                    const grid = container.querySelector('.word-grid');
+                    grid.innerHTML = '';
+                    words.forEach(word => {
+                        const btn = document.createElement('button');
+                        btn.className = 'word-btn';
+                        btn.textContent = word.english;
+                        btn.addEventListener('click', () => this.handleAnswer(word, btn));
+                        grid.appendChild(btn);
+                    });
+                };
+
+                createButtons(this.elements.team1);
+                if (this.state.mode === 'double') {
+                    createButtons(this.elements.team2);
+                }
+            }
+
+            startTimer() {
+                this.timerInterval = setInterval(() => {
+                    this.state.timeLeft--;
+                    const [timer, timerStyle] = [this.elements.timer, this.elements.timer.style];
+                    timer.textContent = `${Math.floor(this.state.timeLeft / 60)}:${(this.state.timeLeft % 60).toString().padStart(2, '0')}`;
+
+                    if (this.state.timeLeft <= 10) timerStyle.animation = 'blink 1s infinite';
+                    if (this.state.timeLeft <= 0) this.endGame();
+                }, 1000);
+            }
+
+            toggleGame() {
+                if (!this.state.isPlaying) {
+                    if (this.state.words.length === 0) return alert('请先加载单词表！');
+                    this.state.isPlaying = true;
+                    this.elements.controlBtn.textContent = '游戏中...';
+                    audio.bgm.loop = true;
+                    audio.bgm.play();
+                    this.startTimer();
+                    this.nextRound();
+                } else {
+                    this.endGame();
+                }
+            }
+
+            // 在Game类中修改endGame方法
+            endGame(victory = false) {
+                this.stopAudioLoop();
+                clearInterval(this.timerInterval);
+                this.state.isPlaying = false;
+                this.elements.controlBtn.textContent = '开始游戏';
+                this.elements.timer.style.animation = '';
+                audio.bgm.pause();
+
+                if (victory) {
+                    audio.victory.play();
+                    createParticles(window.innerWidth / 2, window.innerHeight / 2);
+                }
+
+                const scores = [
+                    this.elements.team1.querySelector('.score-board').textContent,
+                    ...(this.state.mode === 'double' ? [this.elements.team2.querySelector('.score-board').textContent] : [])
+                ];
+
+                // 先显示游戏结果
+                const result = confirm(`游戏结束！\n${scores.join('\n')}\n\n是否推送成绩到爸爸妈妈微信？`);
+
+                if (result) {
+                    this.sendToWechat({
+                        victory,
+                        scores,
+                        timeUsed: 180 - this.state.timeLeft,
+                        totalWords: this.state.words.length,
+                        correctCount: this.state.words.filter(w => w.used).length,
+                        wrongCount: this.state.wrongCount // 传递错误次数
+                    });
+                }
+
+                this.resetGame();
+            }
+
+            // 更新推送方法
+            // 修改后的发送方法
+            async sendToWechat(data) {
+                const WXPUSHER_API = 'https://wxpusher.zjiecode.com/api/send/message';
+                // 请替换为实际参数 ↓
+                const APP_TOKEN = 'AT_zPtKeskSAdhMLh2y62ylBQsjY9WvPGr4';
+                const USER_IDS = ['UID_C74d13AbUID9y5zJPAL9nTdv8cNy', 'UID_用户2'];
+
+                // 修复点：选择器语法和模板字符串闭合
+                const content = `
+            <h3>🏆佳曦英语消消乐战报</h3>
+            <p>📅时间：${new Date().toLocaleString()}</p>
+            <p>🎮模式：${this.state.mode === 'single' ? '单人' : '双人'}模式</p>
+            <p>⏱用时：${data.timeUsed}秒</p>
+            <p>📚词库：${
+                document.querySelector('.preload-item:not([style*="none"])')?.textContent || 
+                '自定义'
+            }</p>
+            <p>${data.victory ? '🎉挑战成功！' : '😭挑战失败'}</p>
+            <hr>
+            ${data.scores.map((score, i) => 
+                `<p>👤队伍${i+1}：${score.replace('得分: ', '')}分</p>`
+            ).join('')}
+            <p>✅正确：${data.correctCount}次</p>
+            <p>❌错误：${data.wrongCount}次</p>
+            <p>📊准确率：${((data.correctCount/(data.correctCount+data.wrongCount))*100).toFixed(1)}%</p>
+        `;
+
+                const payload = {
+                    appToken: APP_TOKEN,
+                    content: content,
+                    contentType: 2,
+                    uids: USER_IDS
+                };
+
+                try {
+                    const response = await fetch(WXPUSHER_API, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    if (result.code === 1000) {
+                        alert('战绩已推送至爸爸妈妈微信，请查收！');
+                    } else {
+                        alert(`推送失败：${result.msg || '未知错误'}`);
+                    }
+                } catch (error) {
+                    alert('推送连接失败，请检查网络');
+                    console.error('WxPusher错误:', error);
+                }
+            }
+
+            // 修改resetGame方法
+            resetGame() {
+                this.state.timeLeft = 180;
+                this.state.words = this.state.words.map(w => ({...w, used: false}));
+                this.setupUI();
+                this.elements.timer.textContent = '3:00';
+                document.querySelectorAll('.score-board').forEach(el => el.textContent = '得分: 0');
+                this.state.currentPrompt = null;
+                this.elements.currentPrompt.textContent = '';
+            }
+
+            changeMode() {
+                this.state.mode = this.elements.modeSelect.value;
+                document.body.classList.toggle('single-mode', this.state.mode === 'single');
+                document.body.classList.toggle('double-mode', this.state.mode === 'double');
+                this.elements.team2.style.display = this.state.mode === 'double' ? 'grid' : 'none';
+                this.setupUI();
+            }
+        }
+
+        // 初始化游戏实例
+        const game = new Game();
+
+        // 文件管理功能
+        function showPreloadList() {
+            const list = document.getElementById('preloadList');
+            if (!list) return;
+            list.style.display = list.style.display === 'block' ? 'none' : 'block';
+        }
+
+        async function loadLocalFile(filename) {
+            try {
+                if (predefinedWords[filename]) {
+                    game.state.words = predefinedWords[filename];
+                    await game.preloadAudios();
+                    game.setupUI();
+                    alert(`成功加载 ${game.state.words.length} 个单词`);
+                } else {
+                    throw new Error('找不到预置单词表');
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function loadOnlineFile() {
+            // 定义 GitHub 文件路径和本地文件路径
+            const GITHUB_URL = 'https://raw.githubusercontent.com/<username>/<repo>/<branch>/path/to/words.txt'; // 替换为实际的 GitHub 文件路径
+            const LOCAL_FILE_PATH = 'data/words.txt'; // 替换为本地文件路径
+
+            try {
+                // 尝试从 GitHub 获取文件
+                const response = await fetch(GITHUB_URL);
+                if (!response.ok) throw new Error(`GitHub 文件加载失败: ${response.status}`);
+                const blob = await response.blob();
+                await game.loadWords(blob);
+                alert('单词表已从 GitHub 成功加载！');
+            } catch (error) {
+                console.warn('从 GitHub 加载失败，尝试从本地加载:', error.message);
+
+                // 如果 GitHub 加载失败，则尝试加载本地文件
+                try {
+                    const response = await fetch(LOCAL_FILE_PATH);
+                    if (!response.ok) throw new Error(`本地文件加载失败: ${response.status}`);
+                    const blob = await response.blob();
+                    await game.loadWords(blob);
+                    alert('单词表已从本地文件加载！');
+                } catch (localError) {
+                    alert('从 GitHub 和本地文件加载均失败，请检查路径或网络连接');
+                    console.error('本地加载错误:', localError.message);
+                }
+            }
+        }
+
+        // 全局事件监听
+        document.addEventListener('click', (e) => {
+            const list = document.getElementById('preloadList');
+            if (list && !e.target.closest('.file-manager')) {
+                list.style.display = 'none';
+            }
+        });
+
+        function toggleNightMode() {
+            document.body.classList.toggle('night-mode');
+            const isNightMode = document.body.classList.contains('night-mode');
+            localStorage.setItem('nightMode', isNightMode ? 'enabled' : 'disabled');
+        }
+
+        // 页面加载时检查用户的偏好
+        document.addEventListener('DOMContentLoaded', () => {
+            const nightMode = localStorage.getItem('nightMode');
+            if (nightMode === 'enabled') {
+                document.body.classList.add('night-mode');
+            }
+        });
+    </script>
+</body>
+
+</html>
+ 
